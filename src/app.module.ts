@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
 import Joi from 'joi';
 
 @Module({
@@ -10,7 +11,11 @@ import Joi from 'joi';
     validationSchema: Joi.object({
       NODE_ENV: Joi.string().valid('dev', 'production', 'test').required()
     })
-  })],
+  }),
+  GraphQLModule.forRoot({
+    autoSchemaFile: true
+  })
+  ],
   controllers: [],
   providers: [],
 })
