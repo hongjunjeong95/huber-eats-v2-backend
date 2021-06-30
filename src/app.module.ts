@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Joi from 'joi';
+import * as Joi from 'joi';
 // import config from './config';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
@@ -15,20 +15,20 @@ import { UsersModule } from './users/users.module';
       ignoreEnvFile: process.env.NODE_ENV === 'production',
 
       // Joi와 validationSchema를 통해서 env variables 유효성 검사를 한다.
-      // validationSchema: Joi.object({
-      //   NODE_ENV: Joi.string().valid('dev', 'production', 'test').required(),
-      //   DB_HOST: Joi.string(),
-      //   DB_PORT: Joi.string(),
-      //   DB_USERNAME: Joi.string(),
-      //   DB_PASSWORD: Joi.string(),
-      //   DB_NAME: Joi.string(),
-      //   PRIVATE_KEY: Joi.string().required(),
-      //   MAILGUN_API_KEY: Joi.string().required(),
-      //   MAILGUN_DOMAIN_NAME: Joi.string().required(),
-      //   MAILGUN_FROM_EMAIL: Joi.string().required(),
-      //   AWS_ACCESS_KEY: Joi.string().required(),
-      //   AWS_SECRET_KEY: Joi.string().required(),
-      // }),
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string().valid('dev', 'production', 'test').required(),
+        DB_HOST: Joi.string(),
+        DB_PORT: Joi.string(),
+        DB_USERNAME: Joi.string(),
+        DB_PASSWORD: Joi.string(),
+        DB_NAME: Joi.string(),
+        PRIVATE_KEY: Joi.string().required(),
+        MAILGUN_API_KEY: Joi.string().required(),
+        MAILGUN_DOMAIN_NAME: Joi.string().required(),
+        MAILGUN_FROM_EMAIL: Joi.string().required(),
+        AWS_ACCESS_KEY: Joi.string().required(),
+        AWS_SECRET_KEY: Joi.string().required(),
+      }),
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,

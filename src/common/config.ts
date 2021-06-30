@@ -17,6 +17,9 @@ const config = {
     access_key: process.env.AWS_ACCESS_KEY,
     secret_key: process.env.AWS_SECRET_KEY,
   },
+  bcrypt: {
+    round: process.env.BCRYPT_ROUND,
+  },
 };
 
 export default config;
