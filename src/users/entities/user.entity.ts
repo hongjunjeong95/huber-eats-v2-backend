@@ -1,32 +1,48 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { IsEmail } from 'class-validator';
+import { InternalServerErrorException } from '@nestjs/common';
+import {
+  Field,
+  Float,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { Core } from 'src/common/entities/common.entity';
-import { Column, Entity } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
+import {
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export enum UserRole {
   Client = 'Client',
   Owner = 'Owner',
-  Deliver = 'Deliver',
+  Delivery = 'Delivery',
 }
 
-@InputType({ isAbstract: true })
+registerEnumType(UserRole, { name: 'UserRole' });
+
+// relationship 때문에 ObjectType과 InputType이 동시에 존재해서
+// server가 에러를 발생시킨다. 이 때문에 InputType에 'UserInputType'
+// 이라고 이름을 지정해줘야 한다.
+@InputType('UserInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 export class User extends Core {
-  @Column({ type: 'string' })
+  @Column({ unique: true })
   @Field((type) => String)
   @IsEmail()
   email: string;
 
-  @Column({ type: 'string' })
+  @Column({ select: false })
   @Field((type) => String)
-  @IsEmail()
+  @IsString()
   password: string;
 
-  @Column({ type: 'enum' })
+  @Column({ type: 'enum', enum: UserRole })
   @Field((type) => UserRole)
-  @IsEmail()
+  @IsEnum(UserRole)
   role: UserRole;
-
-  // todo restaurants, orders, lat, lng, verified
 }

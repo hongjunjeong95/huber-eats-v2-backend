@@ -1,4 +1,5 @@
 const config = {
+  node_env: process.env.NODE_ENV,
   db: {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -6,7 +7,6 @@ const config = {
     password: process.env.DB_PASSWORD,
     name: process.env.DB_NAME,
   },
-
   private_key: process.env.PRIVATE_KEY,
   mail: {
     api_key: process.env.MAILGUN_API_KEY,
@@ -16,8 +16,7 @@ const config = {
   aws: {
     access_key: process.env.AWS_ACCESS_KEY,
     secret_key: process.env.AWS_SECRET_KEY,
-  }
-
-}
+  },
+};
 
 export default config;
