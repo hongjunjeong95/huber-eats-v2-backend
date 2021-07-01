@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
+import { JwtModule } from './jwt/jwt.module';
 // import config from './config';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
@@ -23,11 +24,6 @@ import { UsersModule } from './users/users.module';
         DB_PASSWORD: Joi.string(),
         DB_NAME: Joi.string(),
         PRIVATE_KEY: Joi.string().required(),
-        MAILGUN_API_KEY: Joi.string().required(),
-        MAILGUN_DOMAIN_NAME: Joi.string().required(),
-        MAILGUN_FROM_EMAIL: Joi.string().required(),
-        AWS_ACCESS_KEY: Joi.string().required(),
-        AWS_SECRET_KEY: Joi.string().required(),
       }),
     }),
     GraphQLModule.forRoot({
@@ -53,6 +49,9 @@ import { UsersModule } from './users/users.module';
       logging:
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
       entities: [User],
+    }),
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
     }),
     UsersModule,
   ],

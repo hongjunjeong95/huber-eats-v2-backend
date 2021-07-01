@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from 'src/jwt/jwt.service';
 import { Repository } from 'typeorm';
 import {
   CreateAccountInput,
@@ -13,6 +14,8 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly users: Repository<User>,
+
+    private readonly jwtService: JwtService,
   ) {}
 
   async createAccount({
@@ -33,9 +36,50 @@ export class UserService {
     }
   }
 
+  // async login({ email, password }: LoginInput): Promise<LoginOutput> {
+  //   try {
+  //     const user = await this.users.findOne(
+  //       { email },
+  //       { select: ['id', 'password'] },
+  //     );
+
+  //     if (!user) {
+  //       return {
+  //         ok: false,
+  //         error: 'User not found',
+  //       };
+  //     }
+
+  //     const passwordCorrect = await user.checkPassword(password);
+  //     if (!passwordCorrect) {
+  //       return {
+  //         ok: false,
+  //         error: 'Wrong password',
+  //       };
+  //     }
+
+  //     const token = this.jwtService.sign(user.id);
+
+  //     return {
+  //       ok: true,
+  //       token,
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       ok: false,
+  //       error: "Can't log user in.",
+  //     };
+  //   }
+  // }
+
   async login({ email, password }: LoginInput): Promise<LoginOutput> {
     try {
-      const user = await this.users.findOne({ email });
+      // const user = await this.users.findOne({ email });
+
+      const user = await this.users.findOne(
+        { email },
+        { select: ['password'] },
+      );
 
       if (!user) {
         return {
@@ -51,6 +95,13 @@ export class UserService {
           error: 'Wrong Password',
         };
       }
+
+      const token = this.jwtService.sign(user.id);
+
+      return {
+        ok: true,
+        token,
+      };
     } catch (error) {
       console.log(error);
       return {
