@@ -1,4 +1,4 @@
-const config = {
+export default () => ({
   node_env: process.env.NODE_ENV,
   db: {
     host: process.env.DB_HOST,
@@ -20,6 +20,4 @@ const config = {
   bcrypt: {
     round: process.env.BCRYPT_ROUND,
   },
-};
-
-export default config;
+});

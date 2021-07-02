@@ -11,9 +11,9 @@ import { UserService } from './users.service';
 export class UserResolver {
   constructor(private readonly usersService: UserService) {}
 
-  @Query(() => String)
-  sayHello(): string {
-    return 'Hello World!';
+  @Query((returns) => Boolean)
+  hi() {
+    return true;
   }
 
   @Mutation((returns) => CreateAccountOutput)

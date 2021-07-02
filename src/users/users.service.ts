@@ -7,6 +7,7 @@ import {
   CreateAccountOutput,
 } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
+import { UserProfileOutput } from './dtos/user-profile.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -36,46 +37,8 @@ export class UserService {
     }
   }
 
-  // async login({ email, password }: LoginInput): Promise<LoginOutput> {
-  //   try {
-  //     const user = await this.users.findOne(
-  //       { email },
-  //       { select: ['id', 'password'] },
-  //     );
-
-  //     if (!user) {
-  //       return {
-  //         ok: false,
-  //         error: 'User not found',
-  //       };
-  //     }
-
-  //     const passwordCorrect = await user.checkPassword(password);
-  //     if (!passwordCorrect) {
-  //       return {
-  //         ok: false,
-  //         error: 'Wrong password',
-  //       };
-  //     }
-
-  //     const token = this.jwtService.sign(user.id);
-
-  //     return {
-  //       ok: true,
-  //       token,
-  //     };
-  //   } catch (error) {
-  //     return {
-  //       ok: false,
-  //       error: "Can't log user in.",
-  //     };
-  //   }
-  // }
-
   async login({ email, password }: LoginInput): Promise<LoginOutput> {
     try {
-      // const user = await this.users.findOne({ email });
-
       const user = await this.users.findOne(
         { email },
         { select: ['password'] },
@@ -107,6 +70,22 @@ export class UserService {
       return {
         ok: false,
         error: "Can't login",
+      };
+    }
+  }
+
+  async findById(id: number): Promise<UserProfileOutput> {
+    try {
+      const user = await this.users.findOne({ id });
+      return {
+        ok: true,
+        user,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'User not found',
       };
     }
   }
