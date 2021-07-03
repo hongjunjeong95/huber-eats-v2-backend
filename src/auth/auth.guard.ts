@@ -26,6 +26,7 @@ export class AuthGuard implements CanActivate {
     let token = null;
     const host = GqlExecutionContext.create(context);
 
+    // token 값을 얻는다.
     if (host) {
       if (host.getType() === 'http') {
         const request = host.getArgByIndex(0);
@@ -36,6 +37,7 @@ export class AuthGuard implements CanActivate {
       }
     }
 
+    // token 값으로 jwt 인증을 한다.
     if (token) {
       const decoded = this.jwtService.verify(token);
 
