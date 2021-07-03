@@ -69,7 +69,5 @@ export class AppModule implements NestModule {
     consumer
       .apply(JwtMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.ALL });
-    console.log('DB_HOST');
-    console.log(process.env.DB_HOST);
   }
 }
