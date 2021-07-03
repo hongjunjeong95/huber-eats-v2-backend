@@ -1,4 +1,6 @@
 import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import { Roles } from 'src/auth/role.decorator';
 import {
   CreateAccountInput,
   CreateAccountOutput,
@@ -29,7 +31,8 @@ export class UserResolver {
   }
 
   @Query((returns) => User)
-  me() {
-    return;
+  @Roles(['Any'])
+  me(@AuthUser() user: User) {
+    return user;
   }
 }
