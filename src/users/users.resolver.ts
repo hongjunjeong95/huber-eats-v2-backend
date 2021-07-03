@@ -27,4 +27,9 @@ export class UserResolver {
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
     return this.usersService.login(loginInput);
   }
+
+  @Query((returns) => User)
+  me() {
+    return;
+  }
 }

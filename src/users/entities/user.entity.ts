@@ -10,6 +10,7 @@ import { IsEmail, IsEnum, IsString } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 
 import { Core } from 'src/common/entities/common.entity';
+
 export enum UserRole {
   Client = 'Client',
   Owner = 'Owner',
