@@ -13,6 +13,8 @@ import { AuthModule } from './auth/auth.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { JwtModule } from './jwt/jwt.module';
 import { MailModule } from './mail/mail.module';
+import { Restaurant } from './restaurants/entities/restaurants.entity';
+import { RestaurantsModule } from './restaurants/restaurants.module';
 import { User } from './users/entities/user.entity';
 import { Verification } from './users/entities/verification.entity';
 import { UsersModule } from './users/users.module';
@@ -41,7 +43,6 @@ import { UsersModule } from './users/users.module';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       context: ({ req, connection }) => {
-        console.log('GraphQl context');
         const TOKEN_KEY = 'x-jwt';
         return {
           token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
@@ -67,7 +68,7 @@ import { UsersModule } from './users/users.module';
       // DB에 무슨 일이 일어나는지 콘솔에 표시하는 거다.
       logging:
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
-      entities: [User, Verification],
+      entities: [User, Verification, Restaurant],
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
@@ -79,6 +80,7 @@ import { UsersModule } from './users/users.module';
     }),
     AuthModule,
     UsersModule,
+    RestaurantsModule,
   ],
   providers: [],
   controllers: [],
