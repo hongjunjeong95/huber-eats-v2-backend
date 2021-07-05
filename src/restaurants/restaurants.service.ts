@@ -6,6 +6,7 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
+import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurants.entity';
 import { CategoryRepository } from './repositories/category.repository';
@@ -45,6 +46,22 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not create restaurant',
+      };
+    }
+  }
+
+  async myRestaurants(authUser: User): Promise<MyRestaurantsOutput> {
+    try {
+      const restaurants = await this.restaurants.find({ owner: authUser });
+      return {
+        ok: true,
+        restaurants,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not find restaurants',
       };
     }
   }
