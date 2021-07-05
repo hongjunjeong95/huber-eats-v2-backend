@@ -6,9 +6,10 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
+import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant';
 import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
 import { Category } from './entities/category.entity';
-import { Restaurant } from './entities/restaurants.entity';
+import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
 
 @Injectable()
@@ -50,12 +51,37 @@ export class RestaurantService {
     }
   }
 
-  async myRestaurants(authUser: User): Promise<MyRestaurantsOutput> {
+  async myRestaurants(owner: User): Promise<MyRestaurantsOutput> {
     try {
-      const restaurants = await this.restaurants.find({ owner: authUser });
+      const restaurants = await this.restaurants.find({ owner });
       return {
         ok: true,
         restaurants,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not find restaurants',
+      };
+    }
+  }
+
+  async myRestaurant(
+    owner: User,
+    { id }: MyRestaurantInput,
+  ): Promise<MyRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne(
+        { owner, id },
+        {
+          relations: ['category', 'owner'],
+        },
+      );
+
+      return {
+        ok: true,
+        restaurant,
       };
     } catch (error) {
       console.error(error);

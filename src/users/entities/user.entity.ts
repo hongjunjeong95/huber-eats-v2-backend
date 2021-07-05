@@ -10,7 +10,7 @@ import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 
 import { Core } from 'src/common/entities/common.entity';
-import { Restaurant } from 'src/restaurants/entities/restaurants.entity';
+import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 
 export enum UserRole {
   Client = 'Client',
