@@ -6,6 +6,10 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
+import {
+  GetAllRestaurantsInput,
+  GetAllRestaurantsOutput,
+} from './dtos/get-all-restaurants.dto';
 import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant';
 import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
 import { Category } from './entities/category.entity';
@@ -87,6 +91,34 @@ export class RestaurantService {
       return {
         ok: true,
         restaurant,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not find restaurants',
+      };
+    }
+  }
+
+  async getAllRestaurants({
+    page,
+  }: GetAllRestaurantsInput): Promise<GetAllRestaurantsOutput> {
+    try {
+      const takePages = 3;
+      const [restaurants, totalRestaurants] =
+        await this.restaurants.findAndCount({
+          skip: (page - 1) * takePages,
+          take: takePages,
+          order: {
+            createdAt: 'DESC',
+          },
+        });
+      return {
+        ok: true,
+        restaurants,
+        totalPages: Math.ceil(totalRestaurants / takePages),
+        totalResults: totalRestaurants,
       };
     } catch (error) {
       console.error(error);

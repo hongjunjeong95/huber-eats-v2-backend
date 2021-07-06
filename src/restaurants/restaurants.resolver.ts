@@ -8,6 +8,10 @@ import {
 } from './dtos/create-restaurant.dto';
 import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant';
 import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
+import {
+  GetAllRestaurantsInput,
+  GetAllRestaurantsOutput,
+} from './dtos/get-all-restaurants.dto';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantService } from './restaurants.service';
 
@@ -47,10 +51,18 @@ export class RestaurantResolver {
     return this.restaurantService.myRestaurant(owner, myRestaurantInput);
   }
 
-  // editRestaurant
-  // deleteRestaurant
+  @Query((type) => GetAllRestaurantsOutput)
+  @Roles(['Owner'])
+  async getAllRestaurants(
+    @Args('input') getAllRestaurantsInput: GetAllRestaurantsInput,
+  ): Promise<GetAllRestaurantsOutput> {
+    return this.restaurantService.getAllRestaurants(getAllRestaurantsInput);
+  }
+
   // restaurants
   // restaurant
+  // editRestaurant
+  // deleteRestaurant
   // searchRestaurant
   // getRestaurantPosition
 }

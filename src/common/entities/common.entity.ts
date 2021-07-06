@@ -13,7 +13,7 @@ export class Core {
 
   @CreateDateColumn()
   @Field((type) => Date)
-  created: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
   @Field((type) => Date)
