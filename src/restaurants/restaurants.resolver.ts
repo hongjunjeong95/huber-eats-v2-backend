@@ -6,14 +6,21 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
-import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant';
-import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
+import { GetMyRestaurantsOutput } from './dtos/get-my-restaurants.dto';
 import {
   GetAllRestaurantsInput,
   GetAllRestaurantsOutput,
 } from './dtos/get-all-restaurants.dto';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantService } from './restaurants.service';
+import {
+  GetMyRestaurantInput,
+  GetMyRestaurantOutput,
+} from './dtos/get-my-restaurant.dto';
+import {
+  GetRestaurantInput,
+  GetRestaurantOutput,
+} from './dtos/get-restaurant.dto';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -36,31 +43,40 @@ export class RestaurantResolver {
     );
   }
 
-  @Query((type) => MyRestaurantsOutput)
+  @Query((type) => GetMyRestaurantsOutput)
   @Roles(['Owner'])
-  async myRestaurants(@AuthUser() owner: User): Promise<MyRestaurantsOutput> {
-    return this.restaurantService.myRestaurants(owner);
+  async getMyRestaurants(
+    @AuthUser() owner: User,
+  ): Promise<GetMyRestaurantsOutput> {
+    return this.restaurantService.getMyRestaurants(owner);
   }
 
-  @Query((type) => MyRestaurantOutput)
+  @Query((type) => GetMyRestaurantOutput)
   @Roles(['Owner'])
-  async myRestaurant(
+  async findMyRestaurantById(
     @AuthUser() owner: User,
-    @Args('input') myRestaurantInput: MyRestaurantInput,
-  ): Promise<MyRestaurantOutput> {
-    return this.restaurantService.myRestaurant(owner, myRestaurantInput);
+    @Args('input') myRestaurantInput: GetMyRestaurantInput,
+  ): Promise<GetMyRestaurantOutput> {
+    return this.restaurantService.findMyRestaurantById(
+      owner,
+      myRestaurantInput,
+    );
   }
 
   @Query((type) => GetAllRestaurantsOutput)
-  @Roles(['Owner'])
   async getAllRestaurants(
     @Args('input') getAllRestaurantsInput: GetAllRestaurantsInput,
   ): Promise<GetAllRestaurantsOutput> {
     return this.restaurantService.getAllRestaurants(getAllRestaurantsInput);
   }
 
-  // restaurants
-  // restaurant
+  @Query((type) => GetRestaurantOutput)
+  async getRestaurant(
+    @Args('input') getRestaurantInput: GetRestaurantInput,
+  ): Promise<GetRestaurantOutput> {
+    return this.restaurantService.findRestaurantById(getRestaurantInput);
+  }
+
   // editRestaurant
   // deleteRestaurant
   // searchRestaurant

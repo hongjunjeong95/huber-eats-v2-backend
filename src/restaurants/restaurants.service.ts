@@ -10,8 +10,15 @@ import {
   GetAllRestaurantsInput,
   GetAllRestaurantsOutput,
 } from './dtos/get-all-restaurants.dto';
-import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant';
-import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
+import {
+  GetMyRestaurantInput,
+  GetMyRestaurantOutput,
+} from './dtos/get-my-restaurant.dto';
+import { GetMyRestaurantsOutput } from './dtos/get-my-restaurants.dto';
+import {
+  GetRestaurantInput,
+  GetRestaurantOutput,
+} from './dtos/get-restaurant.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
@@ -55,7 +62,7 @@ export class RestaurantService {
     }
   }
 
-  async myRestaurants(owner: User): Promise<MyRestaurantsOutput> {
+  async getMyRestaurants(owner: User): Promise<GetMyRestaurantsOutput> {
     try {
       const restaurants = await this.restaurants.find({
         where: {
@@ -76,10 +83,10 @@ export class RestaurantService {
     }
   }
 
-  async myRestaurant(
+  async findMyRestaurantById(
     owner: User,
-    { id }: MyRestaurantInput,
-  ): Promise<MyRestaurantOutput> {
+    { id }: GetMyRestaurantInput,
+  ): Promise<GetMyRestaurantOutput> {
     try {
       const restaurant = await this.restaurants.findOne(
         { owner, id },
@@ -119,6 +126,37 @@ export class RestaurantService {
         restaurants,
         totalPages: Math.ceil(totalRestaurants / takePages),
         totalResults: totalRestaurants,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not find restaurants',
+      };
+    }
+  }
+
+  async findRestaurantById({
+    id,
+  }: GetRestaurantInput): Promise<GetRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne(
+        { id },
+        {
+          relations: ['category', 'owner', 'menu'],
+        },
+      );
+
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+
+      return {
+        ok: true,
+        restaurant,
       };
     } catch (error) {
       console.error(error);
