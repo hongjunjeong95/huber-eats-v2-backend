@@ -21,12 +21,16 @@ import {
   GetRestaurantInput,
   GetRestaurantOutput,
 } from './dtos/get-restaurant.dto';
+import {
+  EditRestaurantInput,
+  EditRestaurantOutput,
+} from './dtos/edit-restaurant.dto';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
 
-  @Query((type) => Boolean)
+  @Query((returns) => Boolean)
   sayHello() {
     return true;
   }
@@ -43,7 +47,7 @@ export class RestaurantResolver {
     );
   }
 
-  @Query((type) => GetMyRestaurantsOutput)
+  @Query((returns) => GetMyRestaurantsOutput)
   @Roles(['Owner'])
   async getMyRestaurants(
     @AuthUser() owner: User,
@@ -51,7 +55,7 @@ export class RestaurantResolver {
     return this.restaurantService.getMyRestaurants(owner);
   }
 
-  @Query((type) => GetMyRestaurantOutput)
+  @Query((returns) => GetMyRestaurantOutput)
   @Roles(['Owner'])
   async findMyRestaurantById(
     @AuthUser() owner: User,
@@ -63,18 +67,27 @@ export class RestaurantResolver {
     );
   }
 
-  @Query((type) => GetAllRestaurantsOutput)
+  @Query((returns) => GetAllRestaurantsOutput)
   async getAllRestaurants(
     @Args('input') getAllRestaurantsInput: GetAllRestaurantsInput,
   ): Promise<GetAllRestaurantsOutput> {
     return this.restaurantService.getAllRestaurants(getAllRestaurantsInput);
   }
 
-  @Query((type) => GetRestaurantOutput)
+  @Query((returns) => GetRestaurantOutput)
   async getRestaurant(
     @Args('input') getRestaurantInput: GetRestaurantInput,
   ): Promise<GetRestaurantOutput> {
     return this.restaurantService.findRestaurantById(getRestaurantInput);
+  }
+
+  @Mutation((returns) => EditRestaurantOutput)
+  @Roles(['Owner'])
+  async editRestaurant(
+    @AuthUser() owner: User,
+    @Args('input') editRestaurantInput: EditRestaurantInput,
+  ): Promise<EditRestaurantOutput> {
+    return this.restaurantService.editRestaurant(owner, editRestaurantInput);
   }
 
   // editRestaurant
