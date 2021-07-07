@@ -27,13 +27,13 @@ import {
   FindRestaurantByIdInput,
   FindRestaurantByIdOutput,
 } from './dtos/find-restaurant.dto';
-import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
 import {
   SearchRestaurantByNameInput,
   SearchRestaurantByNameOutput,
 } from './dtos/search-restaurant.dto';
+import { Category } from 'src/categories/entities/category.entity';
 
 @Injectable()
 export class RestaurantService {
