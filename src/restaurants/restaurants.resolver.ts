@@ -34,11 +34,6 @@ import {
 export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
 
-  @Query((returns) => Boolean)
-  sayHello() {
-    return true;
-  }
-
   @Mutation((returns) => CreateRestaurantOutput)
   @Roles(['Owner'])
   async createRestaurant(
@@ -106,7 +101,6 @@ export class RestaurantResolver {
     );
   }
 
-  // deleteRestaurant
   // searchRestaurant
   // getRestaurantPosition
 }
