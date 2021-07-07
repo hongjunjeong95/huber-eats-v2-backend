@@ -29,6 +29,10 @@ import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from './dtos/delete-restaurant.dto';
+import {
+  SearchRestaurantByNameInput,
+  SearchRestaurantByNameOutput,
+} from './dtos/search-restaurant.dto';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -101,6 +105,12 @@ export class RestaurantResolver {
     );
   }
 
-  // searchRestaurant
+  @Query((returns) => SearchRestaurantByNameOutput)
+  async searchRestaurant(
+    @Args('input') searchRestaurantInput: SearchRestaurantByNameInput,
+  ): Promise<SearchRestaurantByNameOutput> {
+    return this.restaurantService.searchRestaurant(searchRestaurantInput);
+  }
+
   // getRestaurantPosition
 }
