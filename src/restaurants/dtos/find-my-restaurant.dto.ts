@@ -3,10 +3,10 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Restaurant } from '../entities/restaurant.entity';
 
 @InputType()
-export class GetMyRestaurantInput extends PickType(Restaurant, ['id']) {}
+export class FindMyRestaurantByIdInput extends PickType(Restaurant, ['id']) {}
 
 @ObjectType()
-export class GetMyRestaurantOutput extends CoreOutput {
+export class FindMyRestaurantByIdOutput extends CoreOutput {
   @Field((type) => Restaurant, { nullable: true })
   restaurant?: Restaurant;
 }

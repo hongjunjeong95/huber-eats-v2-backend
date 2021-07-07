@@ -19,14 +19,14 @@ import {
   GetAllRestaurantsOutput,
 } from './dtos/get-all-restaurants.dto';
 import {
-  GetMyRestaurantInput,
-  GetMyRestaurantOutput,
-} from './dtos/get-my-restaurant.dto';
+  FindMyRestaurantByIdInput,
+  FindMyRestaurantByIdOutput,
+} from './dtos/find-my-restaurant.dto';
 import { GetMyRestaurantsOutput } from './dtos/get-my-restaurants.dto';
 import {
-  GetRestaurantInput,
-  GetRestaurantOutput,
-} from './dtos/get-restaurant.dto';
+  FindRestaurantByIdInput,
+  FindRestaurantByIdOutput,
+} from './dtos/find-restaurant.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
@@ -93,8 +93,8 @@ export class RestaurantService {
 
   async findMyRestaurantById(
     owner: User,
-    { id }: GetMyRestaurantInput,
-  ): Promise<GetMyRestaurantOutput> {
+    { id }: FindMyRestaurantByIdInput,
+  ): Promise<FindMyRestaurantByIdOutput> {
     try {
       const restaurant = await this.restaurants.findOne(
         { owner, id },
@@ -146,7 +146,7 @@ export class RestaurantService {
 
   async findRestaurantById({
     id,
-  }: GetRestaurantInput): Promise<GetRestaurantOutput> {
+  }: FindRestaurantByIdInput): Promise<FindRestaurantByIdOutput> {
     try {
       const restaurant = await this.restaurants.findOne(
         { id },

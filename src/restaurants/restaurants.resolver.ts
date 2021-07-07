@@ -14,13 +14,13 @@ import {
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantService } from './restaurants.service';
 import {
-  GetMyRestaurantInput,
-  GetMyRestaurantOutput,
-} from './dtos/get-my-restaurant.dto';
+  FindMyRestaurantByIdInput,
+  FindMyRestaurantByIdOutput,
+} from './dtos/find-my-restaurant.dto';
 import {
-  GetRestaurantInput,
-  GetRestaurantOutput,
-} from './dtos/get-restaurant.dto';
+  FindRestaurantByIdInput,
+  FindRestaurantByIdOutput,
+} from './dtos/find-restaurant.dto';
 import {
   EditRestaurantInput,
   EditRestaurantOutput,
@@ -54,12 +54,12 @@ export class RestaurantResolver {
     return this.restaurantService.getMyRestaurants(owner);
   }
 
-  @Query((returns) => GetMyRestaurantOutput)
+  @Query((returns) => FindMyRestaurantByIdOutput)
   @Roles(['Owner'])
   async findMyRestaurantById(
     @AuthUser() owner: User,
-    @Args('input') myRestaurantInput: GetMyRestaurantInput,
-  ): Promise<GetMyRestaurantOutput> {
+    @Args('input') myRestaurantInput: FindMyRestaurantByIdInput,
+  ): Promise<FindMyRestaurantByIdOutput> {
     return this.restaurantService.findMyRestaurantById(
       owner,
       myRestaurantInput,
@@ -73,10 +73,10 @@ export class RestaurantResolver {
     return this.restaurantService.getAllRestaurants(getAllRestaurantsInput);
   }
 
-  @Query((returns) => GetRestaurantOutput)
-  async getRestaurant(
-    @Args('input') getRestaurantInput: GetRestaurantInput,
-  ): Promise<GetRestaurantOutput> {
+  @Query((returns) => FindRestaurantByIdOutput)
+  async findRestaurantById(
+    @Args('input') getRestaurantInput: FindRestaurantByIdInput,
+  ): Promise<FindRestaurantByIdOutput> {
     return this.restaurantService.findRestaurantById(getRestaurantInput);
   }
 
