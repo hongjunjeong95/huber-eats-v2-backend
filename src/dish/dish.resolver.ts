@@ -6,6 +6,7 @@ import { DishService } from './dish.service';
 import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 import { FindDishInput, FindDishOutput } from './dtos/find-dish.dto';
 import { GetDishesInput, GetDishesOutput } from './dtos/get-dishes.dto';
+import { UpdateDishInput, UpdateDishOutput } from './dtos/update-dish.dto';
 import { Dish } from './entities/dish.entity';
 
 @Resolver((of) => Dish)
@@ -37,5 +38,14 @@ export class DishResolver {
     return this.dishService.getDishes(getDishesInput);
   }
 
-  // get, edit, delete
+  @Mutation((returns) => UpdateDishOutput)
+  @Roles(['Owner'])
+  async updateDish(
+    @AuthUser() owner: User,
+    @Args('input') updateDishInput: UpdateDishInput,
+  ): Promise<UpdateDishOutput> {
+    return this.dishService.updateDish(owner, updateDishInput);
+  }
+
+  // edit, delete
 }

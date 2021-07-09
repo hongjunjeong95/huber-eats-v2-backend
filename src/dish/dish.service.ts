@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 import { FindDishInput, FindDishOutput } from './dtos/find-dish.dto';
 import { GetDishesInput, GetDishesOutput } from './dtos/get-dishes.dto';
+import { UpdateDishInput, UpdateDishOutput } from './dtos/update-dish.dto';
 import { Dish } from './entities/dish.entity';
 
 @Injectable()
@@ -108,6 +109,57 @@ export class DishService {
       return {
         ok: true,
         dishes,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not find dish',
+      };
+    }
+  }
+
+  async updateDish(
+    owner: User,
+    updateDishInput: UpdateDishInput,
+  ): Promise<UpdateDishOutput> {
+    try {
+      const dish = await this.dishes.findOne(
+        {
+          id: updateDishInput.id,
+          restaurant: {
+            id: updateDishInput.restaurantId,
+          },
+        },
+        {
+          relations: ['restaurant'],
+        },
+      );
+
+      if (!dish) {
+        return {
+          ok: false,
+          error: 'Could not find dish',
+        };
+      }
+
+      if (dish.restaurant.ownerId !== owner.id) {
+        return {
+          ok: false,
+          error: "You can't do that",
+        };
+      }
+
+      const newDish = await this.dishes.save([
+        {
+          id: updateDishInput.id,
+          ...updateDishInput,
+        },
+      ]);
+
+      return {
+        ok: true,
+        dish: newDish[0],
       };
     } catch (error) {
       console.error(error);
