@@ -4,6 +4,7 @@ import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
+import { FindDishInput, FindDishOutput } from './dtos/find-dish.dto';
 import { Dish } from './entities/dish.entity';
 
 @Injectable()
@@ -62,6 +63,28 @@ export class DishService {
       return {
         ok: false,
         error: 'Could not create dish',
+      };
+    }
+  }
+
+  async findDish(findDishInput: FindDishInput): Promise<FindDishOutput> {
+    try {
+      const dish = await this.dishes.findOne({
+        id: findDishInput.id,
+        restaurant: {
+          id: findDishInput.restaurantId,
+        },
+      });
+
+      return {
+        ok: true,
+        dish,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not find dish',
       };
     }
   }
