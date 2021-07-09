@@ -4,7 +4,7 @@ import { Category } from 'src/categories/entities/category.entity';
 import { Core } from 'src/common/entities/common.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { Dish } from './dish.entity';
+import { Dish } from '../../dish/entities/dish.entity';
 
 @InputType('RestaurantInputType', { isAbstract: true })
 @ObjectType()

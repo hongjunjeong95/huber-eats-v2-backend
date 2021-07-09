@@ -2,7 +2,7 @@ import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { IsNumber, IsString } from 'class-validator';
 import { Core } from 'src/common/entities/common.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { Restaurant } from './restaurant.entity';
+import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 
 @InputType('DishInputType')
 @ObjectType()

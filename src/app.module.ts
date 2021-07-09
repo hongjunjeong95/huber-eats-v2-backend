@@ -14,7 +14,7 @@ import { Category } from './categories/entities/category.entity';
 
 import { JwtModule } from './jwt/jwt.module';
 import { MailModule } from './mail/mail.module';
-import { Dish } from './restaurants/entities/dish.entity';
+import { Dish } from './dish/entities/dish.entity';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { User } from './users/entities/user.entity';
