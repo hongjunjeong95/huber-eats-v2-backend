@@ -4,6 +4,7 @@ import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
+import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
 import { FindDishInput, FindDishOutput } from './dtos/find-dish.dto';
 import { GetDishesInput, GetDishesOutput } from './dtos/get-dishes.dto';
 import { UpdateDishInput, UpdateDishOutput } from './dtos/update-dish.dto';
@@ -139,7 +140,7 @@ export class DishService {
       if (!dish) {
         return {
           ok: false,
-          error: 'Could not find dish',
+          error: 'Dish not found',
         };
       }
 
@@ -165,7 +166,53 @@ export class DishService {
       console.error(error);
       return {
         ok: false,
-        error: 'Could not find dish',
+        error: 'Could not udpate dish',
+      };
+    }
+  }
+
+  async deleteDish(
+    owner: User,
+    deleteDishInput: DeleteDishInput,
+  ): Promise<DeleteDishOutput> {
+    try {
+      const dish = await this.dishes.findOne(
+        {
+          id: deleteDishInput.id,
+          restaurant: {
+            id: deleteDishInput.restaurantId,
+          },
+        },
+        {
+          relations: ['restaurant'],
+        },
+      );
+
+      if (!dish) {
+        return {
+          ok: false,
+          error: 'Dish not found',
+        };
+      }
+
+      if (dish.restaurant.ownerId !== owner.id) {
+        return {
+          ok: false,
+          error: "You can't do that",
+        };
+      }
+
+      await this.dishes.delete(dish.id);
+
+      return {
+        ok: true,
+        dish,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not delete dish',
       };
     }
   }
