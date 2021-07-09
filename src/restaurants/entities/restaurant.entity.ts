@@ -3,7 +3,7 @@ import { IsString } from 'class-validator';
 import { Category } from 'src/categories/entities/category.entity';
 import { Core } from 'src/common/entities/common.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
 import { Dish } from '../../dish/entities/dish.entity';
 
 @InputType('RestaurantInputType', { isAbstract: true })
@@ -36,6 +36,9 @@ export class Restaurant extends Core {
     onDelete: 'CASCADE',
   })
   owner: User;
+
+  @RelationId((restaurant: Restaurant) => restaurant.owner)
+  ownerId: number;
 
   @Field((type) => [Dish])
   @OneToMany((type) => Dish, (dish) => dish.restaurant)

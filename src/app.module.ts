@@ -20,6 +20,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { User } from './users/entities/user.entity';
 import { Verification } from './users/entities/verification.entity';
 import { UsersModule } from './users/users.module';
+import { DishModule } from './dish/dish.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     RestaurantsModule,
     CategoryModule,
+    DishModule,
   ],
   providers: [],
   controllers: [],
