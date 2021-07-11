@@ -7,17 +7,17 @@ import {
 } from '@nestjs/graphql';
 import { IsNumber } from 'class-validator';
 import { Core } from 'src/common/entities/common.entity';
-import { Dish } from 'src/dishes/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinTable,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   RelationId,
 } from 'typeorm';
+import { OrderItem } from './order-item.entity';
 
 export enum OrderStatus {
   Pending = 'Pending',
@@ -59,10 +59,10 @@ export class Order extends Core {
   @RelationId((order: Order) => order.restaurant)
   restaurantId: number;
 
-  @Field((type) => [Dish])
-  @ManyToMany((type) => Dish)
+  @Field((type) => [OrderItem])
+  @OneToMany((type) => OrderItem, (orderItem) => orderItem.order)
   @JoinTable()
-  dishes: Dish[];
+  items: OrderItem[];
 
   @Field((type) => Int)
   @Column()
@@ -70,6 +70,6 @@ export class Order extends Core {
   total: number;
 
   @Field((type) => OrderStatus)
-  @Column({ type: 'enum', enum: OrderStatus })
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.Pending })
   status: OrderStatus;
 }
