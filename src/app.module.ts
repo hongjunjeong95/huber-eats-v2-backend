@@ -14,13 +14,13 @@ import { Category } from './categories/entities/category.entity';
 
 import { JwtModule } from './jwt/jwt.module';
 import { MailModule } from './mail/mail.module';
-import { Dish } from './dish/entities/dish.entity';
+import { Dish } from './dishes/entities/dish.entity';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { User } from './users/entities/user.entity';
 import { Verification } from './users/entities/verification.entity';
 import { UsersModule } from './users/users.module';
-import { DishModule } from './dish/dish.module';
+import { DishModule } from './dishes/dish.module';
 
 @Module({
   imports: [

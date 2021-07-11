@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 
 import { Core } from 'src/common/entities/common.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 export enum UserRole {
   Client = 'Client',
@@ -50,6 +51,14 @@ export class User extends Core {
   @OneToMany((type) => Restaurant, (restaurants) => restaurants.owner)
   @Field((type) => [Restaurant])
   restaurants: Restaurant[];
+
+  @OneToMany((type) => Order, (order) => order.customer)
+  @Field((type) => [Order])
+  orders: Order[];
+
+  @OneToMany((type) => Order, (order) => order.deliver)
+  @Field((type) => [Order])
+  rides: Order[];
 
   @BeforeInsert()
   @BeforeUpdate()

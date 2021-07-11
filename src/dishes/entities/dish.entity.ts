@@ -4,7 +4,34 @@ import { Core } from 'src/common/entities/common.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 
-@InputType('DishInputType')
+@InputType('DishChoiceInputType', { isAbstract: true })
+@ObjectType()
+export class DishChoice {
+  @Field((type) => String)
+  @IsString()
+  name: string;
+
+  @Field((type) => Int, { nullable: true })
+  @IsNumber()
+  extra?: number;
+}
+
+@InputType('DishOptionInputType', { isAbstract: true })
+@ObjectType()
+export class DishOption {
+  @Field((type) => String)
+  @IsString()
+  name: string;
+
+  @Field((type) => [DishChoice], { nullable: true })
+  choices?: DishChoice[];
+
+  @Field((type) => Int)
+  @IsNumber()
+  extra: number;
+}
+
+@InputType('DishInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 export class Dish extends Core {
@@ -32,10 +59,9 @@ export class Dish extends Core {
   @ManyToOne((type) => Restaurant, (restaurant) => restaurant.menu)
   restaurant: Restaurant;
 
-  // @Column()
-  // @Field((type) => String)
-  // @IsString()
-  // name: string;
+  @Field((type) => [DishOption], { nullable: true })
+  @Column({ nullable: true, type: 'json' })
+  options?: DishOption[];
 
-  // price, description, photo, restaurant, options
+  // options
 }
