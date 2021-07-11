@@ -21,6 +21,8 @@ import { User } from './users/entities/user.entity';
 import { Verification } from './users/entities/verification.entity';
 import { UsersModule } from './users/users.module';
 import { DishModule } from './dishes/dish.module';
+import { OrderModule } from './orders/order.module';
+import { Order } from './orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -71,7 +73,7 @@ import { DishModule } from './dishes/dish.module';
       // DB에 무슨 일이 일어나는지 콘솔에 표시하는 거다.
       logging:
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
-      entities: [User, Verification, Restaurant, Category, Dish],
+      entities: [User, Verification, Restaurant, Category, Dish, Order],
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
@@ -86,6 +88,7 @@ import { DishModule } from './dishes/dish.module';
     RestaurantsModule,
     CategoryModule,
     DishModule,
+    OrderModule,
   ],
   providers: [],
   controllers: [],

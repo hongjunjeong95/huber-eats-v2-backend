@@ -6,6 +6,7 @@ import {
   registerEnumType,
 } from '@nestjs/graphql';
 import { IsNumber } from 'class-validator';
+import { Core } from 'src/common/entities/common.entity';
 import { Dish } from 'src/dishes/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -30,7 +31,7 @@ registerEnumType(OrderStatus, { name: 'OrderStatus' });
 @InputType('OrderInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
-export class Order {
+export class Order extends Core {
   @Field((type) => User)
   @ManyToOne((type) => User, (user) => user.orders, {
     onDelete: 'SET NULL',
