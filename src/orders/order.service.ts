@@ -5,6 +5,7 @@ import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
+import { FindOrderInput, FindOrderOutput } from './dtos/find-order.dto';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { Order } from './entities/order.entity';
@@ -127,7 +128,7 @@ export class OrderService {
             owner: user,
             id: restaurantId,
           },
-          relations: ['orders'], // relations을 추가함으로써 OneToMany같은 관계형 field를 불러올 수 있다.
+          relations: ['orders'],
         });
 
         if (!restaurant) {
@@ -161,6 +162,58 @@ export class OrderService {
       return {
         ok: true,
         orders,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not get orders',
+      };
+    }
+  }
+
+  canSeeOrder(user: User, order: Order) {
+    let canSee = true;
+    if (user.role === UserRole.Client && user.id !== order.customerId) {
+      canSee = false;
+    } else if (
+      user.role === UserRole.Owner &&
+      user.id !== order.restaurant.ownerId
+    ) {
+      canSee = false;
+    } else if (user.role === UserRole.Delivery && user.id !== order.deliverId) {
+      canSee = false;
+    }
+
+    return canSee;
+  }
+
+  async findOrder(
+    user: User,
+    { orderId }: FindOrderInput,
+  ): Promise<FindOrderOutput> {
+    try {
+      const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant', 'items', 'items.dish'],
+      });
+
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found.',
+        };
+      }
+
+      if (!this.canSeeOrder(user, order)) {
+        return {
+          ok: false,
+          error: 'You can not see that.',
+        };
+      }
+
+      return {
+        ok: true,
+        order,
       };
     } catch (error) {
       console.error(error);
