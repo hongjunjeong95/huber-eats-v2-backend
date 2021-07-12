@@ -16,7 +16,7 @@ import { Order } from 'src/orders/entities/order.entity';
 export enum UserRole {
   Client = 'Client',
   Owner = 'Owner',
-  Delivery = 'Delivery',
+  Deliver = 'Deliver',
 }
 
 registerEnumType(UserRole, { name: 'UserRole' });

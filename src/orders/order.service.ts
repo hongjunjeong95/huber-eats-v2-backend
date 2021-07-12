@@ -150,7 +150,7 @@ export class OrderService {
             id: 'ASC',
           },
         });
-      } else if (user.role === UserRole.Delivery) {
+      } else if (user.role === UserRole.Deliver) {
         orders = await this.orders.find({
           where: {
             deliver: user,
@@ -185,7 +185,7 @@ export class OrderService {
       user.id !== order.restaurant.ownerId
     ) {
       canSee = false;
-    } else if (user.role === UserRole.Delivery && user.id !== order.deliverId) {
+    } else if (user.role === UserRole.Deliver && user.id !== order.deliverId) {
       canSee = false;
     }
 
@@ -256,7 +256,7 @@ export class OrderService {
         if (status !== OrderStatus.Cooking && status !== OrderStatus.Cooked) {
           canEdit = false;
         }
-      } else if (user.role === UserRole.Delivery) {
+      } else if (user.role === UserRole.Deliver) {
         if (
           status !== OrderStatus.PickedUp &&
           status !== OrderStatus.Delivered
