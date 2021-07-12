@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PubSub } from 'graphql-subscriptions';
-import { NEW_PENDING_ORDER, PUB_SUB } from 'src/common/common.constants';
+import {
+  NEW_PENDING_ORDER,
+  ORDER_UPDATED,
+  PUB_SUB,
+} from 'src/common/common.constants';
 import { Dish } from 'src/dishes/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
@@ -291,6 +295,10 @@ export class OrderService {
         id: orderId,
         status,
       });
+
+      const newOrder = { ...order, status };
+
+      await this.pubSub.publish(ORDER_UPDATED, { order: newOrder });
 
       return {
         ok: true,
