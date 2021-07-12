@@ -5,6 +5,10 @@ import { User } from 'src/users/entities/user.entity';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { FindOrderInput, FindOrderOutput } from './dtos/find-order.dto';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
+import {
+  UpdateOrderStatusInput,
+  UpdateOrderStatusOutput,
+} from './dtos/update-order.dto';
 import { Order } from './entities/order.entity';
 import { OrderService } from './order.service';
 
@@ -39,5 +43,14 @@ export class OrderResolver {
     return this.ordersService.findOrder(user, findOrderInput);
   }
 
-  // get, edit, take
+  @Mutation((returns) => UpdateOrderStatusOutput)
+  @Roles(['Client'])
+  async updateOrderStatus(
+    @AuthUser() user: User,
+    @Args('input') updateOrderInput: UpdateOrderStatusInput,
+  ): Promise<UpdateOrderStatusOutput> {
+    return this.ordersService.updateOrderStatus(user, updateOrderInput);
+  }
+
+  // take
 }
