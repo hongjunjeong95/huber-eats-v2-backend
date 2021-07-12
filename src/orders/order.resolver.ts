@@ -4,6 +4,7 @@ import { PubSub } from 'graphql-subscriptions';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Roles } from 'src/auth/role.decorator';
 import {
+  COOKED_ORDER,
   NEW_PENDING_ORDER,
   ORDER_UPDATED,
   PUB_SUB,
@@ -111,5 +112,11 @@ export class OrderResolver {
   @Roles(['Any'])
   orderUpdated(@Args('input') orderUpdatedInput: OrderUpdatedInput) {
     return this.pubSub.asyncIterator(ORDER_UPDATED);
+  }
+
+  @Subscription((returns) => Order)
+  @Roles(['Deliver'])
+  cookedOrder() {
+    return this.pubSub.asyncIterator(COOKED_ORDER);
   }
 }

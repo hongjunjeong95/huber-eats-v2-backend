@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PubSub } from 'graphql-subscriptions';
 import {
+  COOKED_ORDER,
   NEW_PENDING_ORDER,
   ORDER_UPDATED,
   PUB_SUB,
@@ -249,7 +250,6 @@ export class OrderService {
     { orderId, status }: UpdateOrderStatusInput,
   ): Promise<UpdateOrderStatusOutput> {
     try {
-      console.log(orderId);
       const order = await this.orders.findOne(orderId, {
         relations: ['restaurant', 'items', 'items.dish'],
       });
@@ -298,7 +298,15 @@ export class OrderService {
 
       const newOrder = { ...order, status };
 
-      await this.pubSub.publish(ORDER_UPDATED, { order: newOrder });
+      if (user.role === UserRole.Owner) {
+        if (status === OrderStatus.Cooked) {
+          await this.pubSub.publish(COOKED_ORDER, {
+            cookedOrder: newOrder,
+          });
+        }
+      }
+
+      await this.pubSub.publish(ORDER_UPDATED, { orderUpdated: newOrder });
 
       return {
         ok: true,
