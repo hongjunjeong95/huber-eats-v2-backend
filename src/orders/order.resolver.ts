@@ -1,6 +1,9 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Inject } from '@nestjs/common';
+import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
+import { PubSub } from 'graphql-subscriptions';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Roles } from 'src/auth/role.decorator';
+import { NEW_PENDING_ORDER, PUB_SUB } from 'src/common/common.constants';
 import { User } from 'src/users/entities/user.entity';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { FindOrderInput, FindOrderOutput } from './dtos/find-order.dto';
@@ -18,7 +21,12 @@ import { OrderService } from './order.service';
 
 @Resolver((of) => Order)
 export class OrderResolver {
-  constructor(private readonly ordersService: OrderService) {}
+  constructor(
+    private readonly ordersService: OrderService,
+
+    @Inject(PUB_SUB)
+    private readonly pubSub: PubSub,
+  ) {}
 
   @Mutation((returns) => CreateOrderOutput)
   @Roles(['Client'])
@@ -66,5 +74,16 @@ export class OrderResolver {
       deliver,
       takeOrderByDeliverInput,
     );
+  }
+
+  @Subscription((returns) => Order, {
+    filter: ({ pendingOrder: { ownerId } }, _, { user }) => {
+      return ownerId === user.id;
+    },
+    resolve: ({ pendingOrder: { order } }) => order,
+  })
+  @Roles(['Owner'])
+  pendingOrder() {
+    return this.pubSub.asyncIterator(NEW_PENDING_ORDER);
   }
 }
