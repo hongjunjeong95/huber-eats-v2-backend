@@ -6,6 +6,10 @@ import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { FindOrderInput, FindOrderOutput } from './dtos/find-order.dto';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import {
+  TakeOrderByDeliverInput,
+  TakeOrderByDeliverOutput,
+} from './dtos/take-order-by-deliver.dto';
+import {
   UpdateOrderStatusInput,
   UpdateOrderStatusOutput,
 } from './dtos/update-order.dto';
@@ -44,7 +48,7 @@ export class OrderResolver {
   }
 
   @Mutation((returns) => UpdateOrderStatusOutput)
-  @Roles(['Client'])
+  @Roles(['Any'])
   async updateOrderStatus(
     @AuthUser() user: User,
     @Args('input') updateOrderInput: UpdateOrderStatusInput,
@@ -52,5 +56,15 @@ export class OrderResolver {
     return this.ordersService.updateOrderStatus(user, updateOrderInput);
   }
 
-  // take
+  @Mutation((returns) => TakeOrderByDeliverOutput)
+  @Roles(['Deliver'])
+  async takeOrderByDeliver(
+    @AuthUser() deliver: User,
+    @Args('input') takeOrderByDeliverInput: TakeOrderByDeliverInput,
+  ): Promise<TakeOrderByDeliverOutput> {
+    return this.ordersService.takeOrderByDeliver(
+      deliver,
+      takeOrderByDeliverInput,
+    );
+  }
 }

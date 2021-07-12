@@ -8,6 +8,10 @@ import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { FindOrderInput, FindOrderOutput } from './dtos/find-order.dto';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import {
+  TakeOrderByDeliverInput,
+  TakeOrderByDeliverOutput,
+} from './dtos/take-order-by-deliver.dto';
+import {
   UpdateOrderStatusInput,
   UpdateOrderStatusOutput,
 } from './dtos/update-order.dto';
@@ -233,7 +237,10 @@ export class OrderService {
     { orderId, status }: UpdateOrderStatusInput,
   ): Promise<UpdateOrderStatusOutput> {
     try {
-      const order = await this.orders.findOne(orderId);
+      console.log(orderId);
+      const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant', 'items', 'items.dish'],
+      });
 
       if (!order) {
         return {
@@ -285,6 +292,44 @@ export class OrderService {
       return {
         ok: false,
         error: 'Could not update order',
+      };
+    }
+  }
+
+  async takeOrderByDeliver(
+    deliver: User,
+    { orderId }: TakeOrderByDeliverInput,
+  ): Promise<TakeOrderByDeliverOutput> {
+    try {
+      const order = await this.orders.findOne(orderId);
+
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found',
+        };
+      }
+
+      if (order.deliver) {
+        return {
+          ok: false,
+          error: 'This order already has a driver',
+        };
+      }
+
+      await this.orders.save({
+        id: orderId,
+        deliver,
+      });
+
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not assign deliver to order',
       };
     }
   }
