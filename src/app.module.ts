@@ -45,10 +45,15 @@ import { CommonModule } from './common/common.module';
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
       autoSchemaFile: true,
-      context: ({ req, connection }) => {
+      cors: {
+        origin: 'http://localhost:3000',
+        credentials: true,
+      },
+      context: ({ req, res, connection }) => {
         const TOKEN_KEY = 'x-jwt';
         return {
           token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+          res,
         };
       },
     }),

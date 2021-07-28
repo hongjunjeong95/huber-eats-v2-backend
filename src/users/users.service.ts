@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CookieOptions, Request } from 'express';
+
 import { JwtService } from 'src/jwt/jwt.service';
 import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
@@ -9,7 +11,7 @@ import {
 } from './dtos/create-account.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
-import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
+import { UserProfileOutput } from './dtos/user-profile.dto';
 import { VerifyEmailInput, VerifyEmailOutput } from './dtos/verify-email.dto';
 import { User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
@@ -53,13 +55,15 @@ export class UserService {
     }
   }
 
-  async login({ email, password }: LoginInput): Promise<LoginOutput> {
+  async login(
+    { email, password }: LoginInput,
+    req: Request,
+  ): Promise<LoginOutput> {
     try {
       const user = await this.users.findOne(
         { email },
         { select: ['id', 'password'] },
       );
-      console.log(user);
 
       if (!user) {
         return {
@@ -77,6 +81,14 @@ export class UserService {
       }
 
       const token = this.jwtService.sign(user.id);
+      const options: CookieOptions = {
+        maxAge: 86400 * 1000,
+        httpOnly: true,
+        sameSite: 'none', // Client가 Server와 다른 IP(다른 도메인) 이더라도 동작하게 한다.
+        secure: true, // sameSite:'none'을 할 경우 secure:true로 설정해준다.
+      };
+
+      req.res.cookie('token', token, options);
 
       return {
         ok: true,

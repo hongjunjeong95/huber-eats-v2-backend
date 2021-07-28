@@ -1,4 +1,6 @@
+import { Res } from '@nestjs/common';
 import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
+import { Request } from 'express';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Roles } from 'src/auth/role.decorator';
 import {
@@ -24,8 +26,11 @@ export class UserResolver {
   }
 
   @Mutation((returns) => LoginOutput)
-  async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
-    return this.usersService.login(loginInput);
+  async login(
+    @Args('input') loginInput: LoginInput,
+    @Res({ passthrough: true }) req: Request,
+  ): Promise<LoginOutput> {
+    return this.usersService.login(loginInput, req);
   }
 
   @Query((returns) => User)
