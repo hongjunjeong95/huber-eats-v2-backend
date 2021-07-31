@@ -50,9 +50,27 @@ import { CommonModule } from './common/common.module';
         credentials: true,
       },
       context: ({ req, res, connection }) => {
-        const TOKEN_KEY = 'x-jwt';
+        const TOKEN_KEY = 'authorization';
+
+        let token = '';
+        let authorization = '';
+
+        if (req && req.headers && req.headers.hasOwnProperty(TOKEN_KEY)) {
+          authorization = req.headers[TOKEN_KEY];
+        } else if (
+          connection &&
+          connection.context &&
+          connection.context.hasOwnProperty(TOKEN_KEY)
+        ) {
+          authorization = connection.context[TOKEN_KEY];
+        }
+
+        if (authorization.includes('Bearer')) {
+          token = authorization.split(' ')[1];
+        }
+
         return {
-          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+          token,
           res,
         };
       },
