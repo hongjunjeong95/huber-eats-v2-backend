@@ -20,6 +20,7 @@ import { OrderModule } from './orders/order.module';
 import { Order } from './orders/entities/order.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
 import { CommonModule } from './common/common.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -119,6 +120,10 @@ import { CommonModule } from './common/common.module';
     DishModule,
     OrderModule,
     CommonModule,
+    UploadsModule.forRoot({
+      accessKeyId: process.env.AWS_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_SECRET_KEY,
+    }),
   ],
   providers: [],
   controllers: [],
