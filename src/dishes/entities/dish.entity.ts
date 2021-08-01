@@ -56,7 +56,9 @@ export class Dish extends Core {
   description: string;
 
   @Field((type) => String)
-  @ManyToOne((type) => Restaurant, (restaurant) => restaurant.menu)
+  @ManyToOne((type) => Restaurant, (restaurant) => restaurant.menu, {
+    onDelete: 'CASCADE',
+  })
   restaurant: Restaurant;
 
   @Field((type) => [DishOption], { nullable: true })

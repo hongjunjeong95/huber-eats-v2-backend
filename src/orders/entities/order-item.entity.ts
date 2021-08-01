@@ -28,7 +28,7 @@ export class OrderItem extends Core {
   order: Order;
 
   @Field((type) => Dish)
-  @ManyToOne((type) => Dish)
+  @ManyToOne((type) => Dish, { onDelete: 'SET NULL' })
   dish: Dish;
 
   @Field((type) => [OrderItemOption])
