@@ -75,18 +75,14 @@ export class OrderService {
             );
 
             if (dishOption) {
-              if (dishOption.extra) {
-                dishFinalPrice += dishOption.extra;
-              } else {
-                const dishOptionChoice = dishOption.choices.find(
-                  (dishOptionChoice) =>
-                    dishOptionChoice.name === itemOption.choice,
-                );
+              const dishOptionChoice = dishOption.choices.find(
+                (dishOptionChoice) =>
+                  dishOptionChoice.name === itemOption.choice,
+              );
 
-                if (dishOptionChoice) {
-                  if (dishOptionChoice.extra) {
-                    dishFinalPrice += dishOptionChoice.extra;
-                  }
+              if (dishOptionChoice) {
+                if (dishOptionChoice.extra) {
+                  dishFinalPrice += dishOptionChoice.extra;
                 }
               }
             }
