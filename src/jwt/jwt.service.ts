@@ -10,12 +10,12 @@ export class JwtService {
   ) {}
 
   sign(userId: number): string {
-    return jwt.sign({ id: userId }, 'this.options.privateKey', {
-      expiresIn: 86400,
+    return jwt.sign({ id: userId }, this.options.privateKey, {
+      expiresIn: 864000,
     });
   }
 
   verify(token: string) {
-    return jwt.verify(token, 'this.options.privateKey');
+    return jwt.verify(token, this.options.privateKey);
   }
 }
