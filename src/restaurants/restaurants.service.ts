@@ -185,8 +185,11 @@ export class RestaurantService {
   ): Promise<EditRestaurantOutput> {
     try {
       const restaurant = await this.restaurants.findOne({
-        owner,
-        id: editRestaurantInput.restaurantId,
+        where: {
+          owner,
+          id: editRestaurantInput.restaurantId,
+        },
+        relations: ['category'],
       });
 
       if (!restaurant) {
@@ -245,7 +248,6 @@ export class RestaurantService {
 
       return {
         ok: true,
-        restaurant,
       };
     } catch (error) {
       console.error(error);
