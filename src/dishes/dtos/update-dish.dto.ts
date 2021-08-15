@@ -18,7 +18,4 @@ export class UpdateDishInput extends PartialType(
 }
 
 @ObjectType()
-export class UpdateDishOutput extends CoreOutput {
-  @Field((type) => Dish)
-  dish?: Dish;
-}
+export class UpdateDishOutput extends CoreOutput {}

@@ -151,16 +151,13 @@ export class DishService {
         };
       }
 
-      const newDish = await this.dishes.save([
-        {
-          id: updateDishInput.id,
-          ...updateDishInput,
-        },
-      ]);
+      await this.dishes.save({
+        id: updateDishInput.id,
+        ...updateDishInput,
+      });
 
       return {
         ok: true,
-        dish: newDish[0],
       };
     } catch (error) {
       console.error(error);
