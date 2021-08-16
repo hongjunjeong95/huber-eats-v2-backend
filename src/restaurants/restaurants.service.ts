@@ -132,6 +132,7 @@ export class RestaurantService {
           order: {
             createdAt: 'DESC',
           },
+          relations: ['category'],
         });
       return {
         ok: true,
