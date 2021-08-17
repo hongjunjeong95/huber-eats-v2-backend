@@ -42,9 +42,10 @@ export class Order extends Core {
   @RelationId((order: Order) => order.customer)
   customerId: number;
 
-  @Field((type) => User)
+  @Field((type) => User, { nullable: true })
   @ManyToOne((type) => User, (user) => user.rides, {
     onDelete: 'SET NULL',
+    nullable: true,
   })
   deliver: User;
 
