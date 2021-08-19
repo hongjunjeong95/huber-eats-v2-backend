@@ -321,7 +321,9 @@ export class OrderService {
     { orderId }: TakeOrderByDeliverInput,
   ): Promise<TakeOrderByDeliverOutput> {
     try {
-      const order = await this.orders.findOne(orderId);
+      const order = await this.orders.findOne(orderId, {
+        relations: ['customer', 'restaurant'],
+      });
 
       if (!order) {
         return {
@@ -343,7 +345,7 @@ export class OrderService {
       });
 
       await this.pubSub.publish(ORDER_UPDATED, {
-        orderUpdates: { ...order, deliver },
+        orderUpdated: { ...order, deliver },
       });
 
       return {
