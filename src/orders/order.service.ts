@@ -342,6 +342,10 @@ export class OrderService {
         deliver,
       });
 
+      await this.pubSub.publish(ORDER_UPDATED, {
+        orderUpdates: { ...order, deliver },
+      });
+
       return {
         ok: true,
       };
