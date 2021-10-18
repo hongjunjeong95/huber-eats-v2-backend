@@ -50,7 +50,6 @@ export class RestaurantService {
     createRestaurantInput: CreateRestaurantInput,
   ): Promise<CreateRestaurantOutput> {
     try {
-      console.log(createRestaurantInput);
       const newRestaurant = await this.restaurants.create(
         createRestaurantInput,
       );
