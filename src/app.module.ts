@@ -1,18 +1,20 @@
 import { Module } from '@nestjs/common';
 
 import { AuthModule } from '@auth/auth.module';
-import { CategoryModule } from '@apis/categories/category.module';
+import { UploadsModule } from '@uploads/uploads.module';
+import { ConfigModule } from '@config/config.module';
+import { DatabaseModule } from '@database/database.module';
+import { GraphQLModule } from '@graphql/graphql.module';
+import { FiltersModule } from '@filters/filters.module';
 import { JwtModule } from '@jwt/jwt.module';
 import { MailModule } from '@mail/mail.module';
+
+import { CategoryModule } from '@apis/categories/category.module';
 import { RestaurantsModule } from '@apis/restaurants/restaurants.module';
 import { UsersModule } from '@apis/users/users.module';
 import { DishModule } from '@apis/dishes/dish.module';
 import { OrderModule } from '@apis/orders/order.module';
 import { CommonModule } from '@apis/common/common.module';
-import { UploadsModule } from '@uploads/uploads.module';
-import { ConfigModule } from '@config/config.module';
-import { DatabaseModule } from '@database/database.module';
-import { GraphQLModule } from '@graphql/graphql.module';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { GraphQLModule } from '@graphql/graphql.module';
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
     AuthModule,
+    FiltersModule,
 
     // apis
     CommonModule,
