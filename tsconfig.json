@@ -10,6 +10,20 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "noUnusedLocals": true,
+    "paths": {
+      "@auth/*": ["src/auth/*"],
+      "@config/*": ["src/config/*"],
+      "@database/*": ["src/database/*"],
+      "@graphql/*": ["src/graphql/*"],
+      "@jwt/*": ["src/jwt/*"],
+      "@utils/*": ["src/utils/*"],
+      "@mail/*": ["src/mail/*"],
+      "@src/*": ["src/*"],
+      "@apis/*": ["src/apis/*"],
+      "@uploads/*": ["src/uploads/*"],
+      "@filters/*": ["src/filters/*"]
+    }
   }
 }

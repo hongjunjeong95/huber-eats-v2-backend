@@ -7,8 +7,9 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as AWS from 'aws-sdk';
-import { CONFIG_OPTIONS } from 'src/common/common.constants';
-import { UploadsModuleOptions } from './upload.interfaces';
+
+import { CONFIG_OPTIONS } from '@apis/common/common.constants';
+import { UploadsModuleOptions } from '@uploads/upload.interfaces';
 
 const BUCKET_NAME = 'huber-eats-v2';
 

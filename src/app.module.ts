@@ -3,24 +3,24 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
-import { AuthModule } from './auth/auth.module';
-import { CategoryModule } from './categories/category.module';
-import { Category } from './categories/entities/category.entity';
 
-import { JwtModule } from './jwt/jwt.module';
-import { MailModule } from './mail/mail.module';
-import { Dish } from './dishes/entities/dish.entity';
-import { Restaurant } from './restaurants/entities/restaurant.entity';
-import { RestaurantsModule } from './restaurants/restaurants.module';
-import { User } from './users/entities/user.entity';
-import { Verification } from './users/entities/verification.entity';
-import { UsersModule } from './users/users.module';
-import { DishModule } from './dishes/dish.module';
-import { OrderModule } from './orders/order.module';
-import { Order } from './orders/entities/order.entity';
-import { OrderItem } from './orders/entities/order-item.entity';
-import { CommonModule } from './common/common.module';
-import { UploadsModule } from './uploads/uploads.module';
+import { AuthModule } from '@auth/auth.module';
+import { CategoryModule } from '@apis/categories/category.module';
+import { Category } from '@apis/categories/entities/category.entity';
+import { JwtModule } from '@jwt/jwt.module';
+import { MailModule } from '@mail/mail.module';
+import { Dish } from '@apis/dishes/entities/dish.entity';
+import { Restaurant } from '@apis/restaurants/entities/restaurant.entity';
+import { RestaurantsModule } from '@apis/restaurants/restaurants.module';
+import { User } from '@apis/users/entities/user.entity';
+import { Verification } from '@apis/users/entities/verification.entity';
+import { UsersModule } from '@apis/users/users.module';
+import { DishModule } from '@apis/dishes/dish.module';
+import { OrderModule } from '@apis/orders/order.module';
+import { Order } from '@apis/orders/entities/order.entity';
+import { OrderItem } from '@apis/orders/entities/order-item.entity';
+import { CommonModule } from '@apis/common/common.module';
+import { UploadsModule } from '@uploads/uploads.module';
 
 @Module({
   imports: [
