@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindConditions, ObjectLiteral, Repository } from 'typeorm';
 
@@ -51,102 +51,95 @@ export class DishService {
     owner: User,
     createDishInput: CreateDishInput,
   ): Promise<CreateDishOutput> {
-    try {
-      const restaurantId = createDishInput.restaurantId;
-      const restaurant = await this.restaurants.findOne(
-        { id: restaurantId },
+    const restaurantId = createDishInput.restaurantId;
+    const restaurant = await this.restaurants.findOne(
+      { id: restaurantId },
+      {
+        relations: ['dishes'],
+      },
+    );
+    if (!restaurant) {
+      throw new HttpException(
         {
-          relations: ['dish'],
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Restaurant not found',
         },
+        HttpStatus.BAD_REQUEST,
       );
-
-      if (!restaurant) {
-        return {
-          ok: false,
-          error: 'Could not find restaurant',
-        };
-      }
-
-      if (owner.id !== restaurant.ownerId) {
-        return {
-          ok: false,
-          error: "You can't do that.",
-        };
-      }
-
-      if (
-        restaurant.dishes.find((dish) => dish.name === createDishInput.name)
-      ) {
-        return {
-          ok: false,
-          error: 'The dish already exists',
-        };
-      }
-
-      await this.dishes.save(
-        this.dishes.create({ ...createDishInput, restaurant }),
-      );
-
-      return {
-        ok: true,
-      };
-    } catch (error) {
-      console.error(error);
-      return {
-        ok: false,
-        error: 'Could not create dish',
-      };
     }
+
+    if (owner.id !== restaurant.ownerId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'You have no authorization',
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    if (restaurant.dishes.find((dish) => dish.name === createDishInput.name)) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'The dish already exists',
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    const dish = await this.dishes.save(
+      this.dishes.create({ ...createDishInput, restaurant }),
+    );
+
+    return {
+      ok: true,
+      dish,
+    };
   }
 
   async findDish(findDishInput: FindDishInput): Promise<FindDishOutput> {
-    try {
-      const dish = await this.dishes.findOne({
-        id: findDishInput.id,
-        restaurant: {
-          id: findDishInput.restaurantId,
-        },
-      });
+    const dish = await this.dishes.findOne({
+      id: findDishInput.id,
+    });
 
-      return {
-        ok: true,
-        dish,
-      };
-    } catch (error) {
-      console.error(error);
-      return {
-        ok: false,
-        error: 'Could not find dish',
-      };
+    if (!dish) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Dish not found',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
+
+    return {
+      ok: true,
+      dish,
+    };
   }
 
   async getDishes({ restaurantId }: GetDishesInput): Promise<GetDishesOutput> {
-    try {
-      const dishes = await this.dishes.find({
-        restaurant: {
-          id: restaurantId,
-        },
-      });
+    const dishes = await this.dishes.find({
+      restaurant: {
+        id: restaurantId,
+      },
+    });
 
-      if (!dishes) {
-        return {
-          ok: false,
+    if (!dishes) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
           error: 'Dishes not found',
-        };
-      }
-
-      return {
-        ok: true,
-        dishes,
-      };
-    } catch (error) {
-      console.error(error);
-      return {
-        ok: false,
-        error: 'Could not find dish',
-      };
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
+
+    return {
+      ok: true,
+      dishes,
+    };
   }
 
   async updateDish(
@@ -157,9 +150,6 @@ export class DishService {
       const dish = await this.dishes.findOne(
         {
           id: updateDishInput.id,
-          restaurant: {
-            id: updateDishInput.restaurantId,
-          },
         },
         {
           relations: ['restaurant'],
@@ -167,17 +157,23 @@ export class DishService {
       );
 
       if (!dish) {
-        return {
-          ok: false,
-          error: 'Dish not found',
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Dish not found',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       if (dish.restaurant.ownerId !== owner.id) {
-        return {
-          ok: false,
-          error: "You can't do that",
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.FORBIDDEN,
+            error: 'You have no authorization',
+          },
+          HttpStatus.FORBIDDEN,
+        );
       }
 
       await this.dishes.save({
@@ -205,9 +201,6 @@ export class DishService {
       const dish = await this.dishes.findOne(
         {
           id: deleteDishInput.id,
-          restaurant: {
-            id: deleteDishInput.restaurantId,
-          },
         },
         {
           relations: ['restaurant'],
@@ -215,17 +208,23 @@ export class DishService {
       );
 
       if (!dish) {
-        return {
-          ok: false,
-          error: 'Dish not found',
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Dish not found',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       if (dish.restaurant.ownerId !== owner.id) {
-        return {
-          ok: false,
-          error: "You can't do that",
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.FORBIDDEN,
+            error: 'You have no authorization',
+          },
+          HttpStatus.FORBIDDEN,
+        );
       }
 
       await this.dishes.delete(dish.id);
