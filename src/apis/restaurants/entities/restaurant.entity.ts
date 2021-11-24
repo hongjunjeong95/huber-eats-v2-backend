@@ -33,6 +33,9 @@ export class Restaurant extends Core {
   })
   category: Category;
 
+  @RelationId((restaurant: Restaurant) => restaurant.category)
+  categoryId: number;
+
   @Field((type) => User)
   @ManyToOne((type) => User, (user) => user.restaurants, {
     onDelete: 'CASCADE',

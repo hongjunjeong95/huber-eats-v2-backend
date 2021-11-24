@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Raw, Repository } from 'typeorm';
+import { FindConditions, ObjectLiteral, Raw, Repository } from 'typeorm';
 
 import { User } from '@apis/users/entities/user.entity';
 import {
@@ -35,6 +35,10 @@ import {
   SearchRestaurantByNameOutput,
 } from '@apis/restaurants/dtos/search-restaurant.dto';
 import { Category } from '@apis/categories/entities/category.entity';
+import {
+  GetRestaurantsBySlugInput,
+  GetRestaurantsBySlugOutput,
+} from '@src/apis/restaurants/dtos/get-restaurants-on-category.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -44,6 +48,33 @@ export class RestaurantService {
 
     private readonly categories: CategoryRepository,
   ) {}
+  async getRestaurantsByWhere({
+    where,
+  }: {
+    where?:
+      | FindConditions<Restaurant>[]
+      | FindConditions<Restaurant>
+      | ObjectLiteral
+      | string;
+  }) {
+    return this.restaurants.find({
+      where,
+    });
+  }
+
+  async findRestaurantByWhere({
+    where,
+  }: {
+    where?:
+      | FindConditions<Restaurant>[]
+      | FindConditions<Restaurant>
+      | ObjectLiteral
+      | string;
+  }) {
+    return this.restaurants.findOne({
+      where,
+    });
+  }
 
   async createRestaurant(
     owner: User,
@@ -58,11 +89,11 @@ export class RestaurantService {
         createRestaurantInput.categoryName,
       );
 
-      await this.restaurants.save(newRestaurant);
+      const restaurant = await this.restaurants.save(newRestaurant);
 
       return {
         ok: true,
-        restaurantId: newRestaurant.id,
+        restaurant,
       };
     } catch (error) {
       console.error(error);
@@ -152,12 +183,17 @@ export class RestaurantService {
     id,
   }: FindRestaurantByIdInput): Promise<FindRestaurantByIdOutput> {
     try {
-      const restaurant = await this.restaurants.findOne(
-        { id },
-        {
-          relations: ['category', 'owner', 'menu'],
+      const restaurant = await this.findRestaurantByWhere({
+        where: {
+          id,
         },
-      );
+      });
+      // const restaurant = await this.restaurants.findOne(
+      //   { id },
+      //   {
+      //     relations: ['category', 'owner', 'menu'],
+      //   },
+      // );
 
       if (!restaurant) {
         return {
@@ -287,6 +323,43 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not find restaurants',
+      };
+    }
+  }
+
+  async getRestaurantsBySlug({
+    slug,
+    page,
+  }: GetRestaurantsBySlugInput): Promise<GetRestaurantsBySlugOutput> {
+    try {
+      const takePages = 3;
+      const category = await this.categories.findOne({ slug });
+
+      if (!category) {
+        return {
+          ok: false,
+          error: 'Category not found',
+        };
+      }
+      const [restaurants, totalRestaurants] =
+        await this.restaurants.findAndCount({
+          where: {
+            category,
+          },
+          skip: (page - 1) * takePages,
+          take: takePages,
+        });
+      return {
+        ok: true,
+        restaurants,
+        totalPages: Math.ceil(totalRestaurants / takePages),
+        totalResults: totalRestaurants,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Could not load categories',
       };
     }
   }

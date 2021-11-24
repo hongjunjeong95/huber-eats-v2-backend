@@ -34,6 +34,10 @@ import {
   SearchRestaurantByNameInput,
   SearchRestaurantByNameOutput,
 } from '@apis/restaurants/dtos/search-restaurant.dto';
+import {
+  GetRestaurantsBySlugInput,
+  GetRestaurantsBySlugOutput,
+} from '@apis/restaurants/dtos/get-restaurants-on-category.dto';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -78,6 +82,15 @@ export class RestaurantResolver {
     return this.restaurantService.getAllRestaurants(getAllRestaurantsInput);
   }
 
+  @Query((returns) => GetRestaurantsBySlugOutput)
+  async getRestaurantsBySlug(
+    @Args('input') getRestaurantsBySlugInput: GetRestaurantsBySlugInput,
+  ): Promise<GetRestaurantsBySlugOutput> {
+    return this.restaurantService.getRestaurantsBySlug(
+      getRestaurantsBySlugInput,
+    );
+  }
+
   @Query((returns) => FindRestaurantByIdOutput)
   async findRestaurantById(
     @Args('input') getRestaurantInput: FindRestaurantByIdInput,
@@ -112,6 +125,4 @@ export class RestaurantResolver {
   ): Promise<SearchRestaurantByNameOutput> {
     return this.restaurantService.searchRestaurant(searchRestaurantInput);
   }
-
-  // getRestaurantPosition
 }

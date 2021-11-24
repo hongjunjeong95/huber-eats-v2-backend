@@ -7,13 +7,13 @@ import {
 import { Restaurant } from '@apis/restaurants/entities/restaurant.entity';
 
 @InputType()
-export class GetRestaurantsOnCategoryInput extends PaginationInput {
+export class GetRestaurantsBySlugInput extends PaginationInput {
   @Field((type) => String)
   slug?: string;
 }
 
 @ObjectType()
-export class GetRestaurantsOnCategoryOutput extends PaginationOutput {
+export class GetRestaurantsBySlugOutput extends PaginationOutput {
   @Field((type) => [Restaurant])
   restaurants?: Restaurant[];
 }
