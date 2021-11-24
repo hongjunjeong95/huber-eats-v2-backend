@@ -11,7 +11,6 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "noUnusedLocals": true,
     "paths": {
       "@auth/*": ["src/auth/*"],
       "@config/*": ["src/config/*"],

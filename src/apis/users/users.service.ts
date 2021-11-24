@@ -4,7 +4,7 @@ import { CookieOptions, Request } from 'express';
 import { Repository } from 'typeorm';
 
 import { JwtService } from '@jwt/jwt.service';
-import { MailService } from '@mail/mail.service';
+// import { MailService } from '@mail/mail.service';
 import {
   CreateAccountInput,
   CreateAccountOutput,
@@ -31,8 +31,7 @@ export class UserService {
     @InjectRepository(Verification)
     private readonly verifications: Repository<Verification>,
 
-    private readonly jwtService: JwtService,
-    private readonly mailService: MailService,
+    private readonly jwtService: JwtService, // private readonly mailService: MailService,
   ) {}
 
   async createAccount({
@@ -46,15 +45,13 @@ export class UserService {
         return { ok: false, error: 'There is a user with that email already' };
       }
 
-      const user = await this.users.save(
-        this.users.create({ email, password, role }),
-      );
+      await this.users.save(this.users.create({ email, password, role }));
 
-      const verification = await this.verifications.save(
-        this.verifications.create({ user }),
-      );
+      // const verification = await this.verifications.save(
+      //   this.verifications.create({ user }),
+      // );
 
-      this.mailService.sendVerificationEmail(user.email, verification.code);
+      // this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch (e) {
       return { ok: false, error: "Couldn't create account" };
@@ -160,7 +157,6 @@ export class UserService {
         { code },
         { relations: ['user'] },
       );
-      console.log(verification);
 
       if (verification) {
         verification.user.verified = true;
