@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindConditions, ObjectLiteral, Repository } from 'typeorm';
 
 import { Restaurant } from '@apis/restaurants/entities/restaurant.entity';
 import { User } from '@apis/users/entities/user.entity';
@@ -33,6 +33,20 @@ export class DishService {
     private readonly restaurants: Repository<Restaurant>,
   ) {}
 
+  async getDishesByWhere({
+    where,
+  }: {
+    where?:
+      | FindConditions<Dish>[]
+      | FindConditions<Dish>
+      | ObjectLiteral
+      | string;
+  }) {
+    return this.dishes.find({
+      where,
+    });
+  }
+
   async createDish(
     owner: User,
     createDishInput: CreateDishInput,
@@ -42,7 +56,7 @@ export class DishService {
       const restaurant = await this.restaurants.findOne(
         { id: restaurantId },
         {
-          relations: ['menu'],
+          relations: ['dish'],
         },
       );
 
@@ -60,7 +74,9 @@ export class DishService {
         };
       }
 
-      if (restaurant.menu.find((dish) => dish.name === createDishInput.name)) {
+      if (
+        restaurant.dishes.find((dish) => dish.name === createDishInput.name)
+      ) {
         return {
           ok: false,
           error: 'The dish already exists',

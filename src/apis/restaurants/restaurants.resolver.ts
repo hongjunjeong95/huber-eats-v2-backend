@@ -1,4 +1,11 @@
-import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
+import {
+  Resolver,
+  Mutation,
+  Args,
+  Query,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 
 import { AuthUser } from '@auth/auth-user.decorator';
 import { Roles } from '@auth/role.decorator';
@@ -7,17 +14,12 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from '@apis/restaurants/dtos/create-restaurant.dto';
-import { GetMyRestaurantsOutput } from '@apis/restaurants/dtos/get-my-restaurants.dto';
 import {
-  GetAllRestaurantsInput,
-  GetAllRestaurantsOutput,
-} from '@apis/restaurants/dtos/get-all-restaurants.dto';
+  GetRestaurantsInput,
+  GetRestaurantsOutput,
+} from '@src/apis/restaurants/dtos/get-restaurants.dto';
 import { Restaurant } from '@apis/restaurants/entities/restaurant.entity';
 import { RestaurantService } from '@apis/restaurants/restaurants.service';
-import {
-  FindMyRestaurantByIdInput,
-  FindMyRestaurantByIdOutput,
-} from '@apis/restaurants/dtos/find-my-restaurant.dto';
 import {
   FindRestaurantByIdInput,
   FindRestaurantByIdOutput,
@@ -30,18 +32,27 @@ import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from '@apis/restaurants/dtos/delete-restaurant.dto';
-import {
-  SearchRestaurantByNameInput,
-  SearchRestaurantByNameOutput,
-} from '@apis/restaurants/dtos/search-restaurant.dto';
-import {
-  GetRestaurantsBySlugInput,
-  GetRestaurantsBySlugOutput,
-} from '@apis/restaurants/dtos/get-restaurants-on-category.dto';
+import { DishService } from '../dishes/dish.service';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
-  constructor(private readonly restaurantService: RestaurantService) {}
+  constructor(
+    private readonly restaurantService: RestaurantService,
+    private readonly dishService: DishService,
+  ) {}
+
+  @ResolveField()
+  async dishes(@Parent() restaurant: Restaurant) {
+    const { id } = restaurant;
+    const dishes = await this.dishService.getDishesByWhere({
+      where: {
+        restaurant: {
+          id,
+        },
+      },
+    });
+    return dishes;
+  }
 
   @Mutation((returns) => CreateRestaurantOutput)
   @Roles(['Owner'])
@@ -55,47 +66,27 @@ export class RestaurantResolver {
     );
   }
 
-  @Query((returns) => GetMyRestaurantsOutput)
+  @Query((returns) => GetRestaurantsOutput)
   @Roles(['Owner'])
   async getMyRestaurants(
     @AuthUser() owner: User,
-  ): Promise<GetMyRestaurantsOutput> {
-    return this.restaurantService.getMyRestaurants(owner);
+    @Args('input') getRestaurantsInput: GetRestaurantsInput,
+  ): Promise<GetRestaurantsOutput> {
+    return this.restaurantService.getRestaurants(getRestaurantsInput, owner);
   }
 
-  @Query((returns) => FindMyRestaurantByIdOutput)
-  @Roles(['Owner'])
-  async findMyRestaurantById(
-    @AuthUser() owner: User,
-    @Args('input') myRestaurantInput: FindMyRestaurantByIdInput,
-  ): Promise<FindMyRestaurantByIdOutput> {
-    return this.restaurantService.findMyRestaurantById(
-      owner,
-      myRestaurantInput,
-    );
-  }
-
-  @Query((returns) => GetAllRestaurantsOutput)
-  async getAllRestaurants(
-    @Args('input') getAllRestaurantsInput: GetAllRestaurantsInput,
-  ): Promise<GetAllRestaurantsOutput> {
-    return this.restaurantService.getAllRestaurants(getAllRestaurantsInput);
-  }
-
-  @Query((returns) => GetRestaurantsBySlugOutput)
-  async getRestaurantsBySlug(
-    @Args('input') getRestaurantsBySlugInput: GetRestaurantsBySlugInput,
-  ): Promise<GetRestaurantsBySlugOutput> {
-    return this.restaurantService.getRestaurantsBySlug(
-      getRestaurantsBySlugInput,
-    );
+  @Query((returns) => GetRestaurantsOutput)
+  async getRestaurants(
+    @Args('input') getRestaurantsInput: GetRestaurantsInput,
+  ): Promise<GetRestaurantsOutput> {
+    return this.restaurantService.getRestaurants(getRestaurantsInput);
   }
 
   @Query((returns) => FindRestaurantByIdOutput)
   async findRestaurantById(
-    @Args('input') getRestaurantInput: FindRestaurantByIdInput,
+    @Args('input') findRestaurantInput: FindRestaurantByIdInput,
   ): Promise<FindRestaurantByIdOutput> {
-    return this.restaurantService.findRestaurantById(getRestaurantInput);
+    return this.restaurantService.findRestaurantById(findRestaurantInput);
   }
 
   @Mutation((returns) => EditRestaurantOutput)
@@ -117,12 +108,5 @@ export class RestaurantResolver {
       owner,
       deleteRestaurantInput,
     );
-  }
-
-  @Query((returns) => SearchRestaurantByNameOutput)
-  async searchRestaurant(
-    @Args('input') searchRestaurantInput: SearchRestaurantByNameInput,
-  ): Promise<SearchRestaurantByNameOutput> {
-    return this.restaurantService.searchRestaurant(searchRestaurantInput);
   }
 }
