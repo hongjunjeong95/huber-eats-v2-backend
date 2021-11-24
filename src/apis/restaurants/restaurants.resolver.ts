@@ -32,13 +32,15 @@ import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from '@apis/restaurants/dtos/delete-restaurant.dto';
-import { DishService } from '../dishes/dish.service';
+import { DishService } from '@apis/dishes/dish.service';
+import { OrderService } from '@apis/orders/order.service';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
   constructor(
     private readonly restaurantService: RestaurantService,
     private readonly dishService: DishService,
+    private readonly ordersService: OrderService,
   ) {}
 
   @ResolveField()
@@ -52,6 +54,19 @@ export class RestaurantResolver {
       },
     });
     return dishes;
+  }
+
+  @ResolveField()
+  async orders(@Parent() restaurant: Restaurant) {
+    const { id } = restaurant;
+    const orders = await this.ordersService.getOrdersByWhere({
+      where: {
+        restaurant: {
+          id,
+        },
+      },
+    });
+    return orders;
   }
 
   @Mutation((returns) => CreateRestaurantOutput)

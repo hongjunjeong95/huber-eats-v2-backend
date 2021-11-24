@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PubSub } from 'graphql-subscriptions';
-import { Repository } from 'typeorm';
+import { FindConditions, ObjectLiteral, Repository } from 'typeorm';
 
 import {
   COOKED_ORDER,
@@ -53,6 +53,20 @@ export class OrderService {
     @Inject(PUB_SUB) private readonly pubSub: PubSub,
   ) {}
 
+  async getOrdersByWhere({
+    where,
+  }: {
+    where?:
+      | FindConditions<Order>[]
+      | FindConditions<Order>
+      | ObjectLiteral
+      | string;
+  }) {
+    return this.dishes.find({
+      where,
+    });
+  }
+
   async createOrder(
     customer: User,
     { restaurantId, items }: CreateOrderInput,
@@ -61,21 +75,28 @@ export class OrderService {
       const restaurant = await this.restaurants.findOne(restaurantId);
 
       if (!restaurant) {
-        return {
-          ok: false,
-          error: 'Restaurant not found',
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Restaurant not found',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       let orderFinalPrice = 0;
       const orderItems: OrderItem[] = [];
       for (const item of items) {
         const dish = await this.dishes.findOne(item.dishId);
+
         if (!dish) {
-          return {
-            ok: false,
-            error: 'Dish not found.',
-          };
+          throw new HttpException(
+            {
+              status: HttpStatus.BAD_REQUEST,
+              error: 'Dish not found',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
         }
         let dishFinalPrice = dish.price;
         if (item.options) {
@@ -152,17 +173,18 @@ export class OrderService {
       } else if (user.role === UserRole.Owner) {
         const restaurant = await this.restaurants.findOne({
           where: {
-            owner: user,
             id: restaurantId,
           },
-          relations: ['orders'],
         });
 
         if (!restaurant) {
-          return {
-            ok: false,
-            error: 'Restaurant not found',
-          };
+          throw new HttpException(
+            {
+              status: HttpStatus.BAD_REQUEST,
+              error: 'Restaurant not found',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
         }
 
         orders = await this.orders.find({
@@ -219,36 +241,34 @@ export class OrderService {
     user: User,
     { orderId }: FindOrderInput,
   ): Promise<FindOrderOutput> {
-    try {
-      const order = await this.orders.findOne(orderId, {
-        relations: ['restaurant', 'items', 'items.dish', 'deliver', 'customer'],
-      });
+    const order = await this.orders.findOne(orderId, {
+      relations: ['restaurant', 'items', 'items.dish', 'deliver', 'customer'],
+    });
 
-      if (!order) {
-        return {
-          ok: false,
-          error: 'Order not found.',
-        };
-      }
-
-      if (!this.canSeeOrder(user, order)) {
-        return {
-          ok: false,
-          error: 'You can not see that.',
-        };
-      }
-
-      return {
-        ok: true,
-        order,
-      };
-    } catch (error) {
-      console.error(error);
-      return {
-        ok: false,
-        error: 'Could not get orders',
-      };
+    if (!order) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Order not found',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
+
+    if (!this.canSeeOrder(user, order)) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'You can not see that.',
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return {
+      ok: true,
+      order,
+    };
   }
 
   async updateOrderStatus(
@@ -261,17 +281,23 @@ export class OrderService {
       });
 
       if (!order) {
-        return {
-          ok: false,
-          error: 'Order not found',
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Order not found',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       if (!this.canSeeOrder(user, order)) {
-        return {
-          ok: false,
-          error: "Can't see this.",
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.FORBIDDEN,
+            error: 'You can not see that.',
+          },
+          HttpStatus.FORBIDDEN,
+        );
       }
 
       let canEdit = true;
@@ -291,10 +317,13 @@ export class OrderService {
       }
 
       if (!canEdit) {
-        return {
-          ok: false,
-          error: "You can't do that.",
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.FORBIDDEN,
+            error: 'You have no authorization.',
+          },
+          HttpStatus.FORBIDDEN,
+        );
       }
 
       await this.orders.save({
@@ -336,17 +365,23 @@ export class OrderService {
       });
 
       if (!order) {
-        return {
-          ok: false,
-          error: 'Order not found',
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Order not found',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       if (order.deliver) {
-        return {
-          ok: false,
-          error: 'This order already has a driver',
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'This order already has a driver',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       await this.orders.save({

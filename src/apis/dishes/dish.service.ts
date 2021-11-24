@@ -58,6 +58,7 @@ export class DishService {
         relations: ['dishes'],
       },
     );
+
     if (!restaurant) {
       throw new HttpException(
         {
