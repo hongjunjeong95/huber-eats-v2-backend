@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
 
 import { AuthModule } from '@auth/auth.module';
 import { CategoryModule } from '@apis/categories/category.module';
@@ -13,43 +12,12 @@ import { CommonModule } from '@apis/common/common.module';
 import { UploadsModule } from '@uploads/uploads.module';
 import { ConfigModule } from '@config/config.module';
 import { DatabaseModule } from '@database/database.module';
+import { GraphQLModule } from '@graphql/graphql.module';
 
 @Module({
   imports: [
     ConfigModule,
-    GraphQLModule.forRoot({
-      installSubscriptionHandlers: true,
-      autoSchemaFile: true,
-      cors: {
-        origin: 'http://localhost:3000',
-        credentials: true,
-      },
-      context: ({ req, res, connection }) => {
-        const TOKEN_KEY = 'authorization';
-
-        let token = '';
-        let authorization = '';
-
-        if (req && req.headers && req.headers.hasOwnProperty(TOKEN_KEY)) {
-          authorization = req.headers[TOKEN_KEY];
-        } else if (
-          connection &&
-          connection.context &&
-          connection.context.hasOwnProperty(TOKEN_KEY)
-        ) {
-          authorization = connection.context[TOKEN_KEY];
-        }
-
-        if (authorization.includes('Bearer')) {
-          token = authorization.split(' ')[1];
-        }
-
-        return {
-          token,
-          res,
-        };
-      },
-    }),
+    GraphQLModule,
     DatabaseModule,
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
@@ -60,12 +28,14 @@ import { DatabaseModule } from '@database/database.module';
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
     AuthModule,
+
+    // apis
+    CommonModule,
     UsersModule,
     RestaurantsModule,
     CategoryModule,
     DishModule,
     OrderModule,
-    CommonModule,
     UploadsModule.forRoot({
       accessKeyId: process.env.AWS_ACCESS_KEY,
       secretAccessKey: process.env.AWS_SECRET_KEY,
