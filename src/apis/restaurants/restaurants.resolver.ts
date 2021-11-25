@@ -48,6 +48,24 @@ export class RestaurantResolver {
   ) {}
 
   @ResolveField()
+  async category(@Parent() restaurant: Restaurant) {
+    const { id } = restaurant;
+    const category = await this.categoryService.findCategoryByRestaurantId({
+      id,
+    });
+    return category;
+  }
+
+  @ResolveField()
+  async owner(@Parent() restaurant: Restaurant) {
+    const { id } = restaurant;
+    const owner = await this.usersService.findOwnerByRestaurantId({
+      id,
+    });
+    return owner;
+  }
+
+  @ResolveField()
   async dishes(@Parent() restaurant: Restaurant) {
     const { id } = restaurant;
     const dishes = await this.dishService.getDishesByWhere({
@@ -71,24 +89,6 @@ export class RestaurantResolver {
       },
     });
     return orders;
-  }
-
-  @ResolveField()
-  async category(@Parent() restaurant: Restaurant) {
-    const { id } = restaurant;
-    const category = await this.categoryService.findCategoryByRestaurantId({
-      id,
-    });
-    return category;
-  }
-
-  @ResolveField()
-  async owner(@Parent() restaurant: Restaurant) {
-    const { id } = restaurant;
-    const owner = await this.usersService.findOwnerByRestaurantId({
-      id,
-    });
-    return owner;
   }
 
   @Mutation((returns) => CreateRestaurantOutput)
