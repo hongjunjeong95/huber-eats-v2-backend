@@ -149,14 +149,9 @@ export class DishService {
     updateDishInput: UpdateDishInput,
   ): Promise<UpdateDishOutput> {
     try {
-      const dish = await this.dishes.findOne(
-        {
-          id: updateDishInput.id,
-        },
-        {
-          relations: ['restaurant'],
-        },
-      );
+      const dish = await this.dishes.findOne({
+        id: updateDishInput.id,
+      });
 
       if (!dish) {
         throw new HttpException(
@@ -200,14 +195,9 @@ export class DishService {
     deleteDishInput: DeleteDishInput,
   ): Promise<DeleteDishOutput> {
     try {
-      const dish = await this.dishes.findOne(
-        {
-          id: deleteDishInput.id,
-        },
-        {
-          relations: ['restaurant'],
-        },
-      );
+      const dish = await this.dishes.findOne({
+        id: deleteDishInput.id,
+      });
 
       if (!dish) {
         throw new HttpException(
