@@ -47,6 +47,8 @@ export class RestaurantResolver {
     private readonly usersService: UserService,
   ) {}
 
+  // ResolveFields
+
   @ResolveField()
   async category(@Parent() restaurant: Restaurant) {
     const { id } = restaurant;

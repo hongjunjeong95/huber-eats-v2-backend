@@ -37,7 +37,6 @@ export class Order extends Core {
   @Field((type) => User)
   @ManyToOne((type) => User, (user) => user.orders, {
     onDelete: 'SET NULL',
-    eager: true,
   })
   customer: User;
 
@@ -48,7 +47,6 @@ export class Order extends Core {
   @ManyToOne((type) => User, (user) => user.rides, {
     onDelete: 'SET NULL',
     nullable: true,
-    eager: true,
   })
   deliver: User;
 
@@ -58,7 +56,6 @@ export class Order extends Core {
   @Field((type) => Restaurant)
   @ManyToOne((type) => Restaurant, (restaurant) => restaurant.orders, {
     onDelete: 'SET NULL',
-    eager: true,
   })
   restaurant: Restaurant;
 

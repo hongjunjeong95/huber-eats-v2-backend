@@ -48,6 +48,14 @@ export class DishService {
     });
   }
 
+  async findDishByIdForManyToOne({ table, id }: { table: string; id: number }) {
+    return this.dishes
+      .createQueryBuilder('dish')
+      .leftJoinAndSelect(`dish.${table}s`, table)
+      .where(`${table}.id = :id`, { id })
+      .getOne();
+  }
+
   async createDish(
     owner: User,
     createDishInput: CreateDishInput,

@@ -32,7 +32,7 @@ export class OrderItem extends Core {
   @ManyToOne((type) => Dish, { onDelete: 'SET NULL' })
   dish: Dish;
 
-  @Field((type) => [OrderItemOption])
+  @Field((type) => [OrderItemOption], { nullable: true })
   @Column({ type: 'json', nullable: true })
   options?: OrderItemOption[];
 }

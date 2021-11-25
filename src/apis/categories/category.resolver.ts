@@ -20,15 +20,13 @@ export class CategoryResolver {
 
   @ResolveField()
   async restaurants(@Parent() category: Category) {
-    const { id } = category;
-    const restaurants = await this.restaurantService.getRestaurantsByWhere({
+    return this.restaurantService.getRestaurantsByWhere({
       where: {
         category: {
-          id,
+          id: category.id,
         },
       },
     });
-    return restaurants;
   }
 
   @Query((returns) => GetAllCategoriesOutput)

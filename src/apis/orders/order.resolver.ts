@@ -1,5 +1,13 @@
 import { Inject } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+  Subscription,
+} from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 
 import { AuthUser } from '@auth/auth-user.decorator';
@@ -34,15 +42,66 @@ import {
 } from '@apis/orders/dtos/update-order.dto';
 import { Order } from '@apis/orders/entities/order.entity';
 import { OrderService } from '@apis/orders/order.service';
+import { UserService } from '@apis/users/users.service';
+import { RestaurantService } from '@apis/restaurants/restaurants.service';
 
 @Resolver((of) => Order)
 export class OrderResolver {
   constructor(
     private readonly ordersService: OrderService,
+    private readonly usersService: UserService,
+    private readonly restaurantService: RestaurantService,
 
     @Inject(PUB_SUB)
     private readonly pubSub: PubSub,
   ) {}
+
+  // ResolveFields
+  // Order
+
+  @ResolveField()
+  async customer(@Parent() order: Order) {
+    const { id } = order;
+    const customer = await this.usersService.findUserByIdForManyToOne({
+      table: 'order',
+      id,
+    });
+    return customer;
+  }
+
+  @ResolveField()
+  async deliver(@Parent() order: Order) {
+    const { id } = order;
+    const deliver = await this.usersService.findUserByIdForManyToOne({
+      table: 'ride',
+      id,
+    });
+    return deliver;
+  }
+
+  @ResolveField()
+  async restaurant(@Parent() order: Order) {
+    const { id } = order;
+    const restaurant =
+      await this.restaurantService.findRestaurantByIdForManyToOne({
+        table: 'order',
+        id,
+      });
+    return restaurant;
+  }
+
+  @ResolveField()
+  async items(@Parent() order: Order) {
+    const { id } = order;
+    const items = await this.ordersService.getItemsByWhere({
+      where: {
+        order: {
+          id,
+        },
+      },
+    });
+    return items;
+  }
 
   @Mutation((returns) => CreateOrderOutput)
   @Roles(['Client'])

@@ -53,6 +53,9 @@ export class OrderService {
     @Inject(PUB_SUB) private readonly pubSub: PubSub,
   ) {}
 
+  // Service for ResolveFields
+  // Order
+
   async getOrdersByWhere({
     where,
   }: {
@@ -66,6 +69,39 @@ export class OrderService {
       where,
     });
   }
+
+  async getItemsByWhere({
+    where,
+  }: {
+    where?:
+      | FindConditions<OrderItem>[]
+      | FindConditions<OrderItem>
+      | ObjectLiteral
+      | string;
+  }) {
+    return this.orderItems.find({
+      where,
+    });
+  }
+
+  // Service for ResolveFields
+  // OrderItem
+
+  async findOrderByIdForManyToOne({
+    table,
+    id,
+  }: {
+    table: string;
+    id: number;
+  }) {
+    return this.orders
+      .createQueryBuilder('order')
+      .leftJoinAndSelect(`order.${table}s`, table)
+      .where(`${table}.id = :id`, { id })
+      .getOne();
+  }
+
+  // Business Logic
 
   async createOrder(
     customer: User,
@@ -168,7 +204,6 @@ export class OrderService {
             customer: user,
             ...(status && { status }),
           },
-          relations: ['items', 'items.dish'],
         });
       } else if (user.role === UserRole.Owner) {
         const restaurant = await this.restaurants.findOne({
@@ -241,9 +276,14 @@ export class OrderService {
     user: User,
     { orderId }: FindOrderInput,
   ): Promise<FindOrderOutput> {
-    const order = await this.orders.findOne(orderId, {
-      relations: ['restaurant', 'items', 'items.dish', 'deliver', 'customer'],
-    });
+    const order = await this.orders.findOne(
+      {
+        id: orderId,
+      },
+      {
+        relations: ['restaurant'],
+      },
+    );
 
     if (!order) {
       throw new HttpException(
