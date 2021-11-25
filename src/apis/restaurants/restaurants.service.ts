@@ -51,18 +51,21 @@ export class RestaurantService {
     });
   }
 
-  async findRestaurantByWhere({
-    where,
+  async findRestaurantByIdForManyToOne({
+    table,
+    id,
   }: {
-    where?:
-      | FindConditions<Restaurant>[]
-      | FindConditions<Restaurant>
-      | ObjectLiteral
-      | string;
+    table: string;
+    id: number;
   }) {
-    return this.restaurants.findOne({
-      where,
-    });
+    return this.restaurants
+      .createQueryBuilder('restaurant')
+      .leftJoinAndSelect(
+        table === 'dish' ? `restaurant.${table}es` : `restaurant.${table}s`,
+        table,
+      )
+      .where(`${table}.id = :id`, { id })
+      .getOne();
   }
 
   // Resolvers

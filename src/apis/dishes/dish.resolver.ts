@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 
 import { AuthUser } from '@auth/auth-user.decorator';
 import { Roles } from '@auth/role.decorator';
@@ -22,10 +29,26 @@ import {
   UpdateDishOutput,
 } from '@apis/dishes/dtos/update-dish.dto';
 import { Dish } from '@apis/dishes/entities/dish.entity';
+import { RestaurantService } from '../restaurants/restaurants.service';
 
 @Resolver((of) => Dish)
 export class DishResolver {
-  constructor(private readonly dishService: DishService) {}
+  constructor(
+    //
+    private readonly dishService: DishService,
+    private readonly restaurantService: RestaurantService,
+  ) {}
+
+  @ResolveField()
+  async restaurant(@Parent() dish: Dish) {
+    const { id } = dish;
+    const restaurant =
+      await this.restaurantService.findRestaurantByIdForManyToOne({
+        table: 'dish',
+        id,
+      });
+    return restaurant;
+  }
 
   @Mutation((returns) => CreateDishOutput)
   @Roles(['Owner'])
