@@ -20,6 +20,19 @@ export class CategoryService {
     return this.restaurants.count({ category });
   }
 
+  // Service for ResolveFields
+  async findCategoryByRestaurantId({ id }: { id: number }) {
+    return this.categories.findOne({
+      join: {
+        alias: 'category',
+        innerJoin: { restaurants: 'category.restaurants' },
+      },
+      where: (qb) => {
+        qb.where('restaurants.id = :id', { id });
+      },
+    });
+  }
+
   async getAllCategories(): Promise<GetAllCategoriesOutput> {
     try {
       const categories = await this.categories.find();

@@ -10,6 +10,10 @@ import { DishService } from '@apis/dishes/dish.service';
 import { OrderService } from '@apis/orders/order.service';
 import { Order } from '../orders/entities/order.entity';
 import { OrderItem } from '../orders/entities/order-item.entity';
+import { CategoryService } from '../categories/category.service';
+import { UserService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
+import { Verification } from '../users/entities/verification.entity';
 
 @Module({
   imports: [
@@ -18,9 +22,18 @@ import { OrderItem } from '../orders/entities/order-item.entity';
       OrderItem,
       Restaurant,
       Dish,
+      User,
+      Verification,
       CategoryRepository,
     ]),
   ],
-  providers: [RestaurantResolver, RestaurantService, DishService, OrderService],
+  providers: [
+    RestaurantResolver,
+    RestaurantService,
+    DishService,
+    OrderService,
+    CategoryService,
+    UserService,
+  ],
 })
 export class RestaurantsModule {}

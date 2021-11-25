@@ -34,6 +34,8 @@ import {
 } from '@apis/restaurants/dtos/delete-restaurant.dto';
 import { DishService } from '@apis/dishes/dish.service';
 import { OrderService } from '@apis/orders/order.service';
+import { CategoryService } from '../categories/category.service';
+import { UserService } from '../users/users.service';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -41,6 +43,8 @@ export class RestaurantResolver {
     private readonly restaurantService: RestaurantService,
     private readonly dishService: DishService,
     private readonly ordersService: OrderService,
+    private readonly categoryService: CategoryService,
+    private readonly usersService: UserService,
   ) {}
 
   @ResolveField()
@@ -69,6 +73,24 @@ export class RestaurantResolver {
     return orders;
   }
 
+  @ResolveField()
+  async category(@Parent() restaurant: Restaurant) {
+    const { id } = restaurant;
+    const category = await this.categoryService.findCategoryByRestaurantId({
+      id,
+    });
+    return category;
+  }
+
+  @ResolveField()
+  async owner(@Parent() restaurant: Restaurant) {
+    const { id } = restaurant;
+    const owner = await this.usersService.findOwnerByRestaurantId({
+      id,
+    });
+    return owner;
+  }
+
   @Mutation((returns) => CreateRestaurantOutput)
   @Roles(['Owner'])
   async createRestaurant(
@@ -81,6 +103,7 @@ export class RestaurantResolver {
     );
   }
 
+  // Resolvers
   @Query((returns) => GetRestaurantsOutput)
   @Roles(['Owner'])
   async getMyRestaurants(

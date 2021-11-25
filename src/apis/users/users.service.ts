@@ -34,6 +34,19 @@ export class UserService {
     private readonly jwtService: JwtService, // private readonly mailService: MailService,
   ) {}
 
+  // Service for ResolveFields
+  async findOwnerByRestaurantId({ id }: { id: number }) {
+    return this.users.findOne({
+      join: {
+        alias: 'user',
+        innerJoin: { restaurants: 'user.restaurants' },
+      },
+      where: (qb) => {
+        qb.where('restaurants.id = :id', { id });
+      },
+    });
+  }
+
   async createAccount({
     email,
     password,

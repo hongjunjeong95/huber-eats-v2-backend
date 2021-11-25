@@ -128,7 +128,6 @@ export class RestaurantService {
         order: {
           createdAt: 'DESC',
         },
-        relations: ['category', 'owner'],
       },
     );
     return {
@@ -142,12 +141,7 @@ export class RestaurantService {
   async findRestaurantById({
     id,
   }: FindRestaurantByIdInput): Promise<FindRestaurantByIdOutput> {
-    const restaurant = await this.restaurants.findOne(
-      { id },
-      {
-        relations: ['category', 'owner'],
-      },
-    );
+    const restaurant = await this.restaurants.findOne({ id });
 
     if (!restaurant) {
       throw new HttpException(
@@ -179,10 +173,13 @@ export class RestaurantService {
       });
 
       if (!restaurant) {
-        return {
-          ok: false,
-          error: 'Restaurant not found',
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Restaurant not found',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       let category: Category = null;
@@ -224,10 +221,13 @@ export class RestaurantService {
       });
 
       if (!restaurant) {
-        return {
-          ok: false,
-          error: 'Restaurant not found',
-        };
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Restaurant not found',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       await this.restaurants.delete(id);
