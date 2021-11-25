@@ -62,7 +62,7 @@ export class OrderService {
       | ObjectLiteral
       | string;
   }) {
-    return this.dishes.find({
+    return this.orders.find({
       where,
     });
   }
