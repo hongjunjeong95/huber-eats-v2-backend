@@ -21,16 +21,18 @@ export class CategoryService {
   }
 
   // Service for ResolveFields
-  async findCategoryByRestaurantId({ id }: { id: number }) {
-    return this.categories.findOne({
-      join: {
-        alias: 'category',
-        innerJoin: { restaurants: 'category.restaurants' },
-      },
-      where: (qb) => {
-        qb.where('restaurants.id = :id', { id });
-      },
-    });
+  async findCategoryByIdForManyToOne({
+    table,
+    id,
+  }: {
+    table: string;
+    id: number;
+  }) {
+    return this.categories
+      .createQueryBuilder('category')
+      .leftJoinAndSelect(`category.${table}s`, table)
+      .where(`${table}.id = :id`, { id })
+      .getOne();
   }
 
   async getAllCategories(): Promise<GetAllCategoriesOutput> {

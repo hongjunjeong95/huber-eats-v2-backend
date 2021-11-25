@@ -50,7 +50,8 @@ export class RestaurantResolver {
   @ResolveField()
   async category(@Parent() restaurant: Restaurant) {
     const { id } = restaurant;
-    const category = await this.categoryService.findCategoryByRestaurantId({
+    const category = await this.categoryService.findCategoryByIdForManyToOne({
+      table: 'restaurant',
       id,
     });
     return category;
@@ -59,7 +60,8 @@ export class RestaurantResolver {
   @ResolveField()
   async owner(@Parent() restaurant: Restaurant) {
     const { id } = restaurant;
-    const owner = await this.usersService.findOwnerByRestaurantId({
+    const owner = await this.usersService.findUserByIdForManyToOne({
+      table: 'restaurant',
       id,
     });
     return owner;

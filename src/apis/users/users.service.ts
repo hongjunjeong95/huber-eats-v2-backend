@@ -35,16 +35,12 @@ export class UserService {
   ) {}
 
   // Service for ResolveFields
-  async findOwnerByRestaurantId({ id }: { id: number }) {
-    return this.users.findOne({
-      join: {
-        alias: 'user',
-        innerJoin: { restaurants: 'user.restaurants' },
-      },
-      where: (qb) => {
-        qb.where('restaurants.id = :id', { id });
-      },
-    });
+  async findUserByIdForManyToOne({ table, id }: { table: string; id: number }) {
+    return this.users
+      .createQueryBuilder('user')
+      .leftJoinAndSelect(`user.${table}s`, table)
+      .where(`${table}.id = :id`, { id })
+      .getOne();
   }
 
   async createAccount({

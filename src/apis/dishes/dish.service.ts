@@ -33,6 +33,7 @@ export class DishService {
     private readonly restaurants: Repository<Restaurant>,
   ) {}
 
+  // Service for ResolveFields
   async getDishesByWhere({
     where,
   }: {
